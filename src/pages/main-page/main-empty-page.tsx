@@ -1,5 +1,3 @@
-import React from 'react';
-
 function MainEmptyPage(): JSX.Element {
   return (
     <div className="page page--gray page--main">
@@ -8,7 +6,7 @@ function MainEmptyPage(): JSX.Element {
           <div className="header__wrapper">
             <div className="header__left">
               <a className="header__logo-link header__logo-link--active">
-                <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41" />
+                <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41"/>
               </a>
             </div>
             <nav className="header__nav">
@@ -53,7 +51,7 @@ function MainEmptyPage(): JSX.Element {
                 </a>
               </li>
               <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
+                <a className="locations__item-link tabs__item">
                   <span>Amsterdam</span>
                 </a>
               </li>

@@ -12,16 +12,16 @@ type OfferCardProps = {
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
   const { id, isPremium, previewImage, price, isFavorite, rating, title, type } = offer;
-  const wrapperClass =
-    variant === 'favorites'
-      ? 'favorites__image-wrapper place-card__image-wrapper'
-      : variant === 'near-places'
-        ? 'near-places__image-wrapper place-card__image-wrapper'
-        : 'cities__image-wrapper place-card__image-wrapper';
+  let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
+  if (variant === 'favorites') {
+    wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';
+  } else if (variant === 'near-places') {
+    wrapperClass = 'near-places__image-wrapper place-card__image-wrapper';
+  }
 
   return (
     <article
-      className={`$${variant}__card place-card`.replace('$', '')}
+      className={`${variant}__card place-card`}
       onMouseEnter={() => onHover?.(id)}
       onMouseLeave={() => onHover?.(null)}
     >

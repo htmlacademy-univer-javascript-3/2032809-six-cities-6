@@ -9,7 +9,9 @@ type FavoritesPageProps = {
 function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
   const favoriteOffers = offers.filter((o) => o.isFavorite);
   const groupedByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
-    if (!acc[offer.city]) acc[offer.city] = [];
+    if (!acc[offer.city]) {
+      acc[offer.city] = [];
+    }
     acc[offer.city].push(offer);
     return acc;
   }, {});

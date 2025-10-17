@@ -13,7 +13,9 @@ function CommentForm({ onSubmit }: CommentFormProps): JSX.Element {
 
   const handleSubmit = async (evt: FormEvent) => {
     evt.preventDefault();
-    if (!isValid || isSubmitting) return;
+    if (!isValid || isSubmitting) {
+      return;
+    }
     try {
       setIsSubmitting(true);
       await onSubmit?.(rating, comment);
@@ -33,14 +35,22 @@ function CommentForm({ onSubmit }: CommentFormProps): JSX.Element {
     setComment(evt.target.value);
   };
 
+  const titles: Record<number, string> = {
+    5: 'perfect',
+    4: 'good',
+    3: 'not bad',
+    2: 'badly',
+    1: 'terribly',
+  };
+
   return (
-    <form className="reviews__form form" action="#" method="post" onSubmit={handleSubmit}>
+    <form className="reviews__form form" action="#" method="post" onSubmit={(evt) => { void handleSubmit(evt); }}>
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating" onChange={handleRatingChange}>
         {[5, 4, 3, 2, 1].map((star) => (
           <span key={star}>
             <input className="form__rating-input visually-hidden" name="rating" value={star} id={`${star}-stars`} type="radio" checked={rating === star} readOnly />
-            <label htmlFor={`${star}-stars`} className="reviews__rating-label form__rating-label" title={star === 5 ? 'perfect' : star === 4 ? 'good' : star === 3 ? 'not bad' : star === 2 ? 'badly' : 'terribly'}>
+            <label htmlFor={`${star}-stars`} className="reviews__rating-label form__rating-label" title={titles[star]}>
               <svg className="form__star-image" width="37" height="33">
                 <use xlinkHref="#icon-star"></use>
               </svg>

@@ -17,8 +17,12 @@ function OffersList({ offers, variant = 'cities', onActiveChange }: OffersListPr
   };
 
   const wrapperClass = (() => {
-    if (variant === 'favorites') return 'favorites__places';
-    if (variant === 'near-places') return 'near-places__list places__list';
+    if (variant === 'favorites') {
+      return 'favorites__places';
+    }
+    if (variant === 'near-places') {
+      return 'near-places__list places__list';
+    }
     return 'cities__places-list places__list tabs__content';
   })();
 

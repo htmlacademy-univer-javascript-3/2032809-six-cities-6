@@ -43,8 +43,12 @@ function CommentForm({ onSubmit }: CommentFormProps): JSX.Element {
     1: 'terribly',
   };
 
+  const handleFormSubmit = (evt: FormEvent) => {
+    void handleSubmit(evt);
+  };
+
   return (
-    <form className="reviews__form form" action="#" method="post" onSubmit={(evt) => { void handleSubmit(evt); }}>
+    <form className="reviews__form form" action="#" method="post" onSubmit={handleFormSubmit}>
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating" onChange={handleRatingChange}>
         {[5, 4, 3, 2, 1].map((star) => (

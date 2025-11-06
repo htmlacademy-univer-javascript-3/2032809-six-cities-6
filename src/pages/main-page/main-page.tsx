@@ -109,6 +109,9 @@ function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
               </form>
 
               <OffersList offers={offers} variant="cities" onOfferHover={setActiveOfferId} />
+              {activeOfferId ? (
+                <span className="visually-hidden">Active offer: {activeOfferId}</span>
+              ) : null}
             </section>
 
             <div className="cities__right-section">

@@ -1,13 +1,21 @@
-import OfferCard from '../offer-card/offer-card';
+import { useState } from 'react';
+import OfferCard from '../offer-card/offer-card.tsx';
 import type { Offer } from '../../types/offer';
 
 type OffersListProps = {
   offers: Offer[];
-  onOfferHover?: (offerId: string | null) => void;
   variant?: 'cities' | 'favorites' | 'near-places';
+  onActiveChange?: (offerId: string | null) => void;
 };
 
-function OffersList({ offers, onOfferHover, variant = 'cities' }: OffersListProps): JSX.Element {
+function OffersList({ offers, variant = 'cities', onActiveChange }: OffersListProps): JSX.Element {
+  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+
+  const handleHover = (offerId: string | null) => {
+    setActiveOfferId(offerId);
+    onActiveChange?.(offerId);
+  };
+
   const wrapperClass = (() => {
     if (variant === 'favorites') {
       return 'favorites__places';
@@ -21,14 +29,10 @@ function OffersList({ offers, onOfferHover, variant = 'cities' }: OffersListProp
   return (
     <div className={wrapperClass}>
       {offers.map((offer) => (
-        <div
-          key={offer.id}
-          onMouseEnter={() => onOfferHover?.(offer.id)}
-          onMouseLeave={() => onOfferHover?.(null)}
-        >
-          <OfferCard offer={offer} variant={variant} />
-        </div>
+        <OfferCard key={offer.id} offer={offer} onHover={handleHover} variant={variant} />
       ))}
+      {/* activeOfferId зарезервирован для карты */}
+      {activeOfferId ? <span className="visually-hidden">Active offer: {activeOfferId}</span> : null}
     </div>
   );
 }

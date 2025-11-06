@@ -1,12 +1,10 @@
-export type Location = {
-  latitude: number;
-  longitude: number;
-  zoom: number;
-};
-
 export type City = {
   name: 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
-  location: Location;
+  location: {
+    latitude: number;
+    longitude: number;
+    zoom: number;
+  };
 };
 
 export type Host = {
@@ -23,7 +21,11 @@ export type Offer = {
   price: number;
   images: string[];
   city: City;
-  location: Location;
+  location: {
+    latitude: number;
+    longitude: number;
+    zoom: number;
+  };
   goods: string[];
   host: Host;
   isPremium: boolean;

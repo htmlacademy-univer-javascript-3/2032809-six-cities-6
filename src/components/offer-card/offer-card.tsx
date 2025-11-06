@@ -1,42 +1,40 @@
+import { Link } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import type { Offer } from '../../types/offer';
+
 const MAX_RATING = 5;
 
 type OfferCardProps = {
-  isPremium?: boolean;
-  image: string;
-  price: number;
-  isFavorite?: boolean;
-  rating: number; // 0–5
-  title: string;
-  type: string;
+  offer: Offer;
+  onHover?: (offerId: string | null) => void;
+  variant?: 'cities' | 'favorites' | 'near-places';
 };
 
-function OfferCard({
-  isPremium = false,
-  image,
-  price,
-  isFavorite = false,
-  rating,
-  title,
-  type,
-}: OfferCardProps): JSX.Element {
+function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
+  const { id, isPremium, images, price, isFavorite, rating, title, type } = offer;
+  let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
+  if (variant === 'favorites') {
+    wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';
+  } else if (variant === 'near-places') {
+    wrapperClass = 'near-places__image-wrapper place-card__image-wrapper';
+  }
+
   return (
-    <article className="cities__card place-card">
+    <article
+      className={`${variant}__card place-card`}
+      onMouseEnter={() => onHover?.(id)}
+      onMouseLeave={() => onHover?.(null)}
+    >
       {isPremium && (
         <div className="place-card__mark">
           <span>Premium</span>
         </div>
       )}
 
-      <div className="cities__image-wrapper place-card__image-wrapper">
-        <a href="#">
-          <img
-            className="place-card__image"
-            src={image}
-            width={260}
-            height={200}
-            alt="Place image"
-          />
-        </a>
+      <div className={wrapperClass}>
+        <Link to={`${AppRoute.Offer}/${id}`}>
+          <img className="place-card__image" src={images[0]} width={260} height={200} alt="Place image" />
+        </Link>
       </div>
 
       <div className="place-card__info">
@@ -68,7 +66,7 @@ function OfferCard({
         </div>
 
         <h2 className="place-card__name">
-          <a href="#">{title}</a>
+          <Link to={`${AppRoute.Offer}/${id}`}>{title}</Link>
         </h2>
         <p className="place-card__type">{type}</p>
       </div>

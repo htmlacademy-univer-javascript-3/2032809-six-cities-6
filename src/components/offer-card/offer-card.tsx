@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 
 const MAX_RATING = 5;
 
 type OfferCardProps = {
   offer: Offer;
-  onHover?: (offerId: number | null) => void;
+  onHover?: (offerId: string | null) => void;
   variant?: 'cities' | 'favorites' | 'near-places';
 };
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
-  const { id, isPremium, previewImage, price, isFavorite, rating, title, type } = offer;
+  const { id, isPremium, images, price, isFavorite, rating, title, type } = offer;
   let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
   if (variant === 'favorites') {
     wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';
@@ -33,7 +33,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
 
       <div className={wrapperClass}>
         <Link to={`${AppRoute.Offer}/${id}`}>
-          <img className="place-card__image" src={previewImage} width={260} height={200} alt="Place image" />
+          <img className="place-card__image" src={images[0]} width={260} height={200} alt="Place image" />
         </Link>
       </div>
 
@@ -68,7 +68,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
         <h2 className="place-card__name">
           <Link to={`${AppRoute.Offer}/${id}`}>{title}</Link>
         </h2>
-        <p className="place-card__type">{type}</p>
+        <p className="place-card__type">{type.charAt(0).toUpperCase() + type.slice(1)}</p>
       </div>
     </article>
   );

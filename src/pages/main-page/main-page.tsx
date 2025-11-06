@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import OffersList from '../../components/offers-list/offers-list.tsx';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 
 type MainPageProps = {
@@ -8,6 +9,7 @@ type MainPageProps = {
 };
 
 function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
+  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
   return (
     <div className="page page--gray page--main">
       <header className="header">
@@ -106,7 +108,7 @@ function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
                 </ul>
               </form>
 
-              <OffersList offers={offers} variant="cities" />
+              <OffersList offers={offers} variant="cities" onOfferHover={setActiveOfferId} />
             </section>
 
             <div className="cities__right-section">

@@ -1,60 +1,158 @@
-export type Offer = {
-  id: number;
-  city: 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
-  isPremium: boolean;
-  previewImage: string;
-  price: number;
-  isFavorite: boolean;
-  rating: number; // 0-5
-  title: string;
-  type: 'Apartment' | 'Room' | 'House' | 'Hotel';
-};
+import type { Offer } from '../types/offer';
 
 export const offers: Offer[] = [
   {
-    id: 1701,
-    city: 'Amsterdam',
+    id: '101cf67d-35bb-4d51-bec2-00658e49e710',
+    title: 'Amazing and Extremely Central Flat',
+    description:
+      'Design interior in most sympathetic area! Completely renovated, well-equipped, cosy studio in idyllic, over 100 years old wooden house. Calm street, fast connection to center and airport.',
+    type: 'room',
+    price: 260,
+    images: [
+      'https://14.design.htmlacademy.pro/static/hotel/15.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/10.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/16.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/11.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/7.jpg',
+    ],
+    city: {
+      name: 'Paris',
+      location: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
+    },
+    location: { latitude: 48.86861, longitude: 2.342499, zoom: 16 },
+    goods: [
+      'Laptop friendly workspace',
+      'Washer',
+      'Dishwasher',
+      'Wi-Fi',
+      'Kitchen',
+      'Coffee machine',
+      'Breakfast',
+    ],
+    host: {
+      isPro: true,
+      name: 'Angelina',
+      avatarUrl:
+        'https://14.design.htmlacademy.pro/static/host/avatar-angelina.jpg',
+    },
     isPremium: true,
-    previewImage: 'img/apartment-01.jpg',
-    price: 120,
-    isFavorite: false,
-    rating: 4.8,
-    title: 'Beautiful & luxurious apartment at great location',
-    type: 'Apartment',
-  },
-  {
-    id: 1702,
-    city: 'Amsterdam',
-    isPremium: false,
-    previewImage: 'img/room.jpg',
-    price: 80,
     isFavorite: true,
-    rating: 4.0,
-    title: 'Wood and stone place',
-    type: 'Room',
+    rating: 4.3,
+    bedrooms: 1,
+    maxAdults: 3,
   },
   {
-    id: 1703,
-    city: 'Cologne',
-    isPremium: false,
-    previewImage: 'img/apartment-02.jpg',
-    price: 132,
-    isFavorite: true,
-    rating: 4.0,
-    title: 'Canal View Prinsengracht',
-    type: 'Apartment',
-  },
-  {
-    id: 1704,
-    city: 'Amsterdam',
+    id: 'd13dcd2d-ed74-4b1a-a4e9-199a4d829710',
+    title: 'The Joshua Tree House',
+    description:
+      'A new spacious villa, one floor. All commodities, jacuzzi and beautiful scenery. Ideal for families or friends.',
+    type: 'room',
+    price: 170,
+    images: [
+      'https://14.design.htmlacademy.pro/static/hotel/12.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/13.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/9.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/6.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/4.jpg',
+    ],
+    city: {
+      name: 'Paris',
+      location: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
+    },
+    location: { latitude: 48.85861, longitude: 2.330499, zoom: 16 },
+    goods: ['Towels', 'Wi-Fi', 'Fridge'],
+    host: {
+      isPro: true,
+      name: 'Angelina',
+      avatarUrl:
+        'https://14.design.htmlacademy.pro/static/host/avatar-angelina.jpg',
+    },
     isPremium: true,
-    previewImage: 'img/apartment-03.jpg',
-    price: 180,
     isFavorite: true,
-    rating: 5.0,
-    title: 'Nice, cozy, warm big bed apartment',
-    type: 'Apartment',
+    rating: 1.4,
+    bedrooms: 1,
+    maxAdults: 3,
+  },
+  {
+    id: '8f6a4dbd-6579-4da5-b0b4-67bdefda61d8',
+    title: 'Perfectly located Castro',
+    description:
+      'I am happy to welcome you to my apartment in the city center! Three words: location, cosy and chic!',
+    type: 'apartment',
+    price: 251,
+    images: [
+      'https://14.design.htmlacademy.pro/static/hotel/1.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/19.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/11.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/10.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/15.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/17.jpg',
+    ],
+    city: {
+      name: 'Paris',
+      location: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
+    },
+    location: { latitude: 48.83461, longitude: 2.335499, zoom: 16 },
+    goods: ['Baby seat', 'Wi-Fi', 'Washer', 'Washing machine'],
+    host: {
+      isPro: true,
+      name: 'Angelina',
+      avatarUrl:
+        'https://14.design.htmlacademy.pro/static/host/avatar-angelina.jpg',
+    },
+    isPremium: true,
+    isFavorite: true,
+    rating: 2.5,
+    bedrooms: 4,
+    maxAdults: 7,
+  },
+  {
+    id: '9c3524e8-cf79-486d-ad5c-5ac99e605a21',
+    title: 'Loft Studio in the Central Area',
+    description:
+      'This is a place for dreamers to reset, reflect, and create. Designed with a "slow" pace in mind.',
+    type: 'house',
+    price: 555,
+    images: [
+      'https://14.design.htmlacademy.pro/static/hotel/16.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/2.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/12.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/1.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/9.jpg',
+      'https://14.design.htmlacademy.pro/static/hotel/4.jpg',
+    ],
+    city: {
+      name: 'Paris',
+      location: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
+    },
+    location: { latitude: 48.87961, longitude: 2.353499, zoom: 16 },
+    goods: [
+      'Kitchen',
+      'Wi-Fi',
+      'Cable TV',
+      'Baby seat',
+      'Washer',
+      'Washing machine',
+      'Towels',
+      'Fridge',
+      'Laptop friendly workspace',
+      'Coffee machine',
+      'Breakfast',
+      'Heating',
+      'Dishwasher',
+    ],
+    host: {
+      isPro: true,
+      name: 'Angelina',
+      avatarUrl:
+        'https://14.design.htmlacademy.pro/static/host/avatar-angelina.jpg',
+    },
+    isPremium: true,
+    isFavorite: true,
+    rating: 4.3,
+    bedrooms: 5,
+    maxAdults: 4,
   },
 ];
-
-

@@ -1,5 +1,5 @@
 import OffersList from '../../components/offers-list/offers-list.tsx';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 
 type FavoritesPageProps = {
@@ -9,10 +9,11 @@ type FavoritesPageProps = {
 function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
   const favoriteOffers = offers.filter((o) => o.isFavorite);
   const groupedByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
-    if (!acc[offer.city]) {
-      acc[offer.city] = [];
+    const cityName = offer.city.name;
+    if (!acc[cityName]) {
+      acc[cityName] = [];
     }
-    acc[offer.city].push(offer);
+    acc[cityName].push(offer);
     return acc;
   }, {});
   return (

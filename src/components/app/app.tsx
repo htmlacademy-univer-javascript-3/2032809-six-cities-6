@@ -7,7 +7,7 @@ import OfferPage from '../../pages/offer-page/offer-page';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import { AppRoute } from '../../const';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 
 type AppProps = {
   offersCount: number;

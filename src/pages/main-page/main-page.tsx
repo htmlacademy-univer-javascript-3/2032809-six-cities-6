@@ -1,4 +1,5 @@
 import OffersList from '../../components/offers-list/offers-list.tsx';
+import Map from '../../components/map/map.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 
@@ -110,7 +111,7 @@ function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
             </section>
 
             <div className="cities__right-section">
-              <section className="cities__map map"></section>
+              <Map className="cities__map map" city={offers[0].city} offers={offers} />
             </div>
           </div>
         </div>

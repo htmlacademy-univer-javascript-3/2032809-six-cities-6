@@ -20,6 +20,7 @@ export type Offer = {
   type: 'room' | 'apartment' | 'house' | 'hotel';
   price: number;
   images: string[];
+  previewImage?: string;
   city: City;
   location: {
     latitude: number;

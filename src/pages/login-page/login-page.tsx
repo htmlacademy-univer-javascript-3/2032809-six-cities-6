@@ -1,11 +1,48 @@
+import { FormEvent, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { login } from '../../store/action';
+import type { AppDispatch } from '../../store/index';
+import { Link } from 'react-router-dom';
+
 function LoginPage(): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (password.trim() === '') {
+      setError('Password cannot consist of spaces only');
+      return;
+    }
+
+    dispatch(login(email, password))
+      .then(() => {
+        navigate(AppRoute.Main);
+      })
+      .catch(() => {
+        setError('Failed to login. Please check your credentials.');
+      });
+  };
+
   return (
     <div className="page page--gray page--login">
       <header className="header">
         <div className="container">
           <div className="header__wrapper">
             <div className="header__left">
-              <a className="header__logo-link" href="main.html">
+              <Link className="header__logo-link" to={AppRoute.Main}>
                 <img
                   className="header__logo"
                   src="img/logo.svg"
@@ -13,7 +50,7 @@ function LoginPage(): JSX.Element {
                   width={81}
                   height={41}
                 />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -23,7 +60,7 @@ function LoginPage(): JSX.Element {
         <div className="page__login-container container">
           <section className="login">
             <h1 className="login__title">Sign in</h1>
-            <form className="login__form form" action="#" method="post">
+            <form className="login__form form" action="#" method="post" onSubmit={handleSubmit}>
               <div className="login__input-wrapper form__input-wrapper">
                 <label className="visually-hidden" htmlFor="email">E-mail</label>
                 <input
@@ -32,6 +69,8 @@ function LoginPage(): JSX.Element {
                   type="email"
                   name="email"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -44,9 +83,13 @@ function LoginPage(): JSX.Element {
                   type="password"
                   name="password"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
+
+              {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
 
               <button className="login__submit form__submit button" type="submit">
                 Sign in

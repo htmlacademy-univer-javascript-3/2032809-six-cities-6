@@ -1,5 +1,6 @@
 import type { City, Offer } from '../types/offer';
-import { changeCity, loadOffers, setSortType, setOffersLoadingStatus, type SortType } from './action';
+import { changeCity, loadOffers, setSortType, setOffersLoadingStatus, requireAuthorization, type SortType } from './action';
+import { AuthorizationStatus } from '../const';
 
 type CityName = City['name'];
 
@@ -8,6 +9,7 @@ type State = {
   offers: Offer[];
   sortType: SortType;
   isOffersLoading: boolean;
+  authorizationStatus: AuthorizationStatus;
 };
 
 const initialState: State = {
@@ -15,9 +17,10 @@ const initialState: State = {
   offers: [],
   sortType: 'Popular',
   isOffersLoading: false,
+  authorizationStatus: AuthorizationStatus.Unknown,
 };
 
-type Action = ReturnType<typeof changeCity> | ReturnType<typeof loadOffers> | ReturnType<typeof setSortType> | ReturnType<typeof setOffersLoadingStatus>;
+type Action = ReturnType<typeof changeCity> | ReturnType<typeof loadOffers> | ReturnType<typeof setSortType> | ReturnType<typeof setOffersLoadingStatus> | ReturnType<typeof requireAuthorization>;
 
 function reducer(state = initialState, action: Action): State {
   switch (action.type) {
@@ -29,6 +32,8 @@ function reducer(state = initialState, action: Action): State {
       return { ...state, sortType: action.payload };
     case 'SET_OFFERS_LOADING_STATUS':
       return { ...state, isOffersLoading: action.payload };
+    case 'REQUIRE_AUTHORIZATION':
+      return { ...state, authorizationStatus: action.payload };
     default:
       return state;
   }

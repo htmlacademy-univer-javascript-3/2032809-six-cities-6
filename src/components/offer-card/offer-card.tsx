@@ -11,8 +11,8 @@ type OfferCardProps = {
 };
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
-  const { id, isPremium, images, price, isFavorite, rating, title, type } = offer;
-  const imageUrl = images && images.length > 0 ? images[0] : '';
+  const { id, isPremium, images, previewImage, price, isFavorite, rating, title, type } = offer;
+  const imageUrl = previewImage || (images && images.length > 0 ? images[0] : '');
   let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
   if (variant === 'favorites') {
     wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';

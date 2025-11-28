@@ -12,6 +12,7 @@ type OfferCardProps = {
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
   const { id, isPremium, images, price, isFavorite, rating, title, type } = offer;
+  const imageUrl = images && images.length > 0 ? images[0] : '';
   let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
   if (variant === 'favorites') {
     wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';
@@ -33,7 +34,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
 
       <div className={wrapperClass}>
         <Link to={`${AppRoute.Offer}/${id}`}>
-          <img className="place-card__image" src={images[0]} width={260} height={200} alt="Place image" />
+          <img className="place-card__image" src={imageUrl} width={260} height={200} alt="Place image" />
         </Link>
       </div>
 

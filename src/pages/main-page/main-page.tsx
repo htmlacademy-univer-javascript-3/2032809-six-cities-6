@@ -1,14 +1,28 @@
+import { useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import Map from '../../components/map/map.tsx';
-import type { Offer } from '../../types/offer';
+import CitiesList from '../../components/cities-list/cities-list.tsx';
 import { Link } from 'react-router-dom';
+import type { RootState } from '../../store/index';
+import type { Offer, City } from '../../types/offer';
 
-type MainPageProps = {
-  offersCount: number;
-  offers: Offer[];
+const CITY_COORDINATES: Record<City['name'], { latitude: number; longitude: number; zoom: number }> = {
+  Paris: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
+  Cologne: { latitude: 50.938361, longitude: 6.959974, zoom: 13 },
+  Brussels: { latitude: 50.846557, longitude: 4.351697, zoom: 13 },
+  Amsterdam: { latitude: 52.38333, longitude: 4.9, zoom: 13 },
+  Hamburg: { latitude: 53.550341, longitude: 10.000654, zoom: 13 },
+  Dusseldorf: { latitude: 51.225402, longitude: 6.776314, zoom: 13 },
 };
 
-function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
+function MainPage(): JSX.Element {
+  const city = useSelector((state: RootState) => state.city);
+  const allOffers = useSelector((state: RootState) => state.offers);
+  const cityOffers = allOffers.filter((offer: Offer) => offer.city.name === city);
+  const cityData: City = cityOffers.length > 0
+    ? cityOffers[0].city
+    : { name: city, location: CITY_COORDINATES[city] };
+
   return (
     <div className="page page--gray page--main">
       <header className="header">
@@ -48,47 +62,14 @@ function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
         <div className="tabs">
-          <section className="locations container">
-            <ul className="locations__list tabs__list">
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Paris</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Cologne</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Brussels</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item tabs__item--active">
-                  <span>Amsterdam</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Hamburg</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Dusseldorf</span>
-                </a>
-              </li>
-            </ul>
-          </section>
+          <CitiesList />
         </div>
 
         <div className="cities">
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{offersCount} places to stay in Amsterdam</b>
+              <b className="places__found">{cityOffers.length} places to stay in {city}</b>
               <form className="places__sorting" action="#" method="get">
                 <span className="places__sorting-caption">Sort by</span>
                 <span className="places__sorting-type" tabIndex={0}>
@@ -107,11 +88,11 @@ function MainPage({ offersCount, offers }: MainPageProps): JSX.Element {
                 </ul>
               </form>
 
-              <OffersList offers={offers} variant="cities" />
+              <OffersList offers={cityOffers} variant="cities" />
             </section>
 
             <div className="cities__right-section">
-              <Map className="cities__map map" city={offers[0].city} offers={offers} />
+              <Map className="cities__map map" city={cityData} offers={cityOffers} />
             </div>
           </div>
         </div>

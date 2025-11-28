@@ -4,6 +4,7 @@ import OffersList from '../../components/offers-list/offers-list.tsx';
 import Map from '../../components/map/map.tsx';
 import CitiesList from '../../components/cities-list/cities-list.tsx';
 import SortOptions from '../../components/sort-options/sort-options.tsx';
+import Spinner from '../../components/spinner/spinner.tsx';
 import { Link } from 'react-router-dom';
 import type { RootState } from '../../store/index';
 import type { Offer, City } from '../../types/offer';
@@ -38,6 +39,7 @@ function MainPage(): JSX.Element {
   const city = useSelector((state: RootState) => state.city);
   const allOffers = useSelector((state: RootState) => state.offers);
   const sortType = useSelector((state: RootState) => state.sortType);
+  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const cityOffers = allOffers.filter((offer: Offer) => offer.city.name === city);
@@ -90,17 +92,23 @@ function MainPage(): JSX.Element {
 
         <div className="cities">
           <div className="cities__places-container container">
-            <section className="cities__places places">
-              <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{cityOffers.length} places to stay in {city}</b>
-              <SortOptions />
+            {isOffersLoading ? (
+              <Spinner />
+            ) : (
+              <>
+                <section className="cities__places places">
+                  <h2 className="visually-hidden">Places</h2>
+                  <b className="places__found">{cityOffers.length} places to stay in {city}</b>
+                  <SortOptions />
 
-              <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
-            </section>
+                  <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
+                </section>
 
-            <div className="cities__right-section">
-              <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
-            </div>
+                <div className="cities__right-section">
+                  <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>

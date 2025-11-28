@@ -1,4 +1,5 @@
 import type { City, Offer } from '../types/offer';
+import type { Review } from '../types/review';
 import type { AxiosInstance } from 'axios';
 import type { AppDispatch, RootState } from './index';
 import { AuthorizationStatus } from '../const';
@@ -72,5 +73,61 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
 export const logout = () => {
   localStorage.removeItem('six-cities-token');
   return requireAuthorization(AuthorizationStatus.NoAuth);
+};
+
+export const loadOffer = (offer: Offer | null) => ({
+  type: 'LOAD_OFFER' as const,
+  payload: offer,
+});
+
+export const loadNearbyOffers = (offers: Offer[]) => ({
+  type: 'LOAD_NEARBY_OFFERS' as const,
+  payload: offers,
+});
+
+export const loadReviews = (reviews: Review[]) => ({
+  type: 'LOAD_REVIEWS' as const,
+  payload: reviews,
+});
+
+export const fetchOffer = (id: string) => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Offer>(`/offers/${id}`);
+    dispatch(loadOffer(data));
+  } catch {
+    dispatch(loadOffer(null));
+  }
+};
+
+export const fetchNearbyOffers = (id: string) => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Offer[]>(`/offers/${id}/nearby`);
+    dispatch(loadNearbyOffers(data));
+  } catch {
+    dispatch(loadNearbyOffers([]));
+  }
+};
+
+export const fetchReviews = (id: string) => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Review[]>(`/comments/${id}`);
+    dispatch(loadReviews(data));
+  } catch {
+    dispatch(loadReviews([]));
+  }
+};
+
+export type CommentData = {
+  comment: string;
+  rating: number;
+};
+
+export const postComment = (id: string, commentData: CommentData) => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    await api.post<Review>(`/comments/${id}`, commentData);
+    await dispatch(fetchReviews(id));
+  } catch {
+    throw new Error('Failed to post comment');
+  }
 };
 

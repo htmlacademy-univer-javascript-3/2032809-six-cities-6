@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import Map from '../../components/map/map.tsx';
@@ -8,54 +8,27 @@ import Spinner from '../../components/spinner/spinner.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { logout } from '../../store/action';
-import type { RootState } from '../../store/index';
-import type { Offer, City } from '../../types/offer';
-import type { SortType } from '../../store/action';
-
-const CITY_COORDINATES: Record<City['name'], { latitude: number; longitude: number; zoom: number }> = {
-  Paris: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
-  Cologne: { latitude: 50.938361, longitude: 6.959974, zoom: 13 },
-  Brussels: { latitude: 50.846557, longitude: 4.351697, zoom: 13 },
-  Amsterdam: { latitude: 52.38333, longitude: 4.9, zoom: 13 },
-  Hamburg: { latitude: 53.550341, longitude: 10.000654, zoom: 13 },
-  Dusseldorf: { latitude: 51.225402, longitude: 6.776314, zoom: 13 },
-};
-
-function sortOffers(offers: Offer[], sortType: SortType): Offer[] {
-  const sortedOffers = [...offers];
-  switch (sortType) {
-    case 'Popular':
-      return sortedOffers;
-    case 'Price: low to high':
-      return sortedOffers.sort((a, b) => a.price - b.price);
-    case 'Price: high to low':
-      return sortedOffers.sort((a, b) => b.price - a.price);
-    case 'Top rated first':
-      return sortedOffers.sort((a, b) => b.rating - a.rating);
-    default:
-      return sortedOffers;
-  }
-}
+import { getSortedCityOffers, getCityData, getCity, getIsOffersLoading, getAuthorizationStatus } from '../../store/selectors';
 
 function MainPage(): JSX.Element {
   const dispatch = useDispatch();
-  const city = useSelector((state: RootState) => state.city);
-  const allOffers = useSelector((state: RootState) => state.offers);
-  const sortType = useSelector((state: RootState) => state.sortType);
-  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const city = useSelector(getCity);
+  const sortedOffers = useSelector(getSortedCityOffers);
+  const cityData = useSelector(getCityData);
+  const isOffersLoading = useSelector(getIsOffersLoading);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
-  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
-  const cityOffers = allOffers.filter((offer: Offer) => offer.city.name === city);
-  const sortedOffers = sortOffers(cityOffers, sortType);
-  const cityData: City = cityOffers.length > 0
-    ? cityOffers[0].city
-    : { name: city, location: CITY_COORDINATES[city] };
+  const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
+  const cityOffersCount = useMemo(() => sortedOffers.length, [sortedOffers.length]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     dispatch(logout());
-  };
+  }, [dispatch]);
+
+  const handleActiveOfferChange = useCallback((offerId: string | null) => {
+    setActiveOfferId(offerId);
+  }, []);
 
   return (
     <div className="page page--gray page--main">
@@ -117,10 +90,10 @@ function MainPage(): JSX.Element {
               <>
                 <section className="cities__places places">
                   <h2 className="visually-hidden">Places</h2>
-                  <b className="places__found">{cityOffers.length} places to stay in {city}</b>
+                  <b className="places__found">{cityOffersCount} places to stay in {city}</b>
                   <SortOptions />
 
-                  <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
+                  <OffersList offers={sortedOffers} variant="cities" onActiveChange={handleActiveOfferChange} />
                 </section>
 
                 <div className="cities__right-section">

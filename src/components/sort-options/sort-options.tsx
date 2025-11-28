@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSortType, type SortType } from '../../store/action';
-import type { RootState } from '../../store/index';
+import { getSortType } from '../../store/selectors';
 
 const SORT_OPTIONS: SortType[] = ['Popular', 'Price: low to high', 'Price: high to low', 'Top rated first'];
 
 function SortOptions(): JSX.Element {
   const dispatch = useDispatch();
-  const currentSort = useSelector((state: RootState) => state.sortType);
+  const currentSort = useSelector(getSortType);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSortClick = (sortType: SortType) => {
+  const handleSortClick = useCallback((sortType: SortType) => {
     dispatch(setSortType(sortType));
     setIsOpen(false);
-  };
+  }, [dispatch]);
+
+  const handleToggle = useCallback(() => {
+    setIsOpen((prev) => !prev);
+  }, []);
 
   return (
     <form className="places__sorting" action="#" method="get">
@@ -21,7 +25,7 @@ function SortOptions(): JSX.Element {
       <span
         className="places__sorting-type"
         tabIndex={0}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
       >
         {currentSort}
         <svg className="places__sorting-arrow" width="7" height="4">
@@ -44,5 +48,5 @@ function SortOptions(): JSX.Element {
   );
 }
 
-export default SortOptions;
+export default memo(SortOptions);
 

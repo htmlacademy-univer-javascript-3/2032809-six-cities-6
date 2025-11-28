@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
@@ -7,15 +8,15 @@ type FavoritesPageProps = {
 };
 
 function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
-  const favoriteOffers = offers.filter((o) => o.isFavorite);
-  const groupedByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
+  const favoriteOffers = useMemo(() => offers.filter((o) => o.isFavorite), [offers]);
+  const groupedByCity = useMemo(() => favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
     const cityName = offer.city.name;
     if (!acc[cityName]) {
       acc[cityName] = [];
     }
     acc[cityName].push(offer);
     return acc;
-  }, {});
+  }, {}), [favoriteOffers]);
   return (
     <div className="page">
       <header className="header">

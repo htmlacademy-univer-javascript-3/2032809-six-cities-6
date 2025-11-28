@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { Offer } from '../../types/offer';
 import type { Review } from '../../types/review';
-import { loadOffer, loadNearbyOffers, loadReviews } from '../action';
 
 type OfferProcessState = {
   currentOffer: Offer | null;
@@ -21,14 +20,14 @@ const offerProcessSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loadOffer, (state, action: PayloadAction<Offer | null>) => {
-        state.currentOffer = action.payload;
+      .addCase('LOAD_OFFER', (state, action) => {
+        state.currentOffer = (action as { type: 'LOAD_OFFER'; payload: Offer | null }).payload;
       })
-      .addCase(loadNearbyOffers, (state, action: PayloadAction<Offer[]>) => {
-        state.nearbyOffers = action.payload;
+      .addCase('LOAD_NEARBY_OFFERS', (state, action) => {
+        state.nearbyOffers = (action as { type: 'LOAD_NEARBY_OFFERS'; payload: Offer[] }).payload;
       })
-      .addCase(loadReviews, (state, action: PayloadAction<Review[]>) => {
-        state.reviews = action.payload;
+      .addCase('LOAD_REVIEWS', (state, action) => {
+        state.reviews = (action as { type: 'LOAD_REVIEWS'; payload: Review[] }).payload;
       });
   },
 });

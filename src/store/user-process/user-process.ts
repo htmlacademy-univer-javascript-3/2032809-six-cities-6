@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { requireAuthorization } from '../action';
+import { createSlice } from '@reduxjs/toolkit';
 import { AuthorizationStatus } from '../../const';
 
 type UserProcessState = {
@@ -16,8 +15,8 @@ const userProcessSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(requireAuthorization, (state, action: PayloadAction<AuthorizationStatus>) => {
-        state.authorizationStatus = action.payload;
+      .addCase('REQUIRE_AUTHORIZATION', (state, action) => {
+        state.authorizationStatus = (action as { type: 'REQUIRE_AUTHORIZATION'; payload: AuthorizationStatus }).payload;
       });
   },
 });

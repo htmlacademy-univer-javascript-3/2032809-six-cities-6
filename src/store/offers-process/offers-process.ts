@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { City, Offer } from '../../types/offer';
-import { changeCity, loadOffers, setSortType, setOffersLoadingStatus, type SortType } from '../action';
+import type { SortType } from '../action';
 
 type CityName = City['name'];
 
@@ -24,17 +24,17 @@ const offersProcessSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(changeCity, (state, action: PayloadAction<CityName>) => {
-        state.city = action.payload;
+      .addCase('CHANGE_CITY', (state, action) => {
+        state.city = (action as { type: 'CHANGE_CITY'; payload: CityName }).payload;
       })
-      .addCase(loadOffers, (state, action: PayloadAction<Offer[]>) => {
-        state.offers = action.payload;
+      .addCase('LOAD_OFFERS', (state, action) => {
+        state.offers = (action as { type: 'LOAD_OFFERS'; payload: Offer[] }).payload;
       })
-      .addCase(setSortType, (state, action: PayloadAction<SortType>) => {
-        state.sortType = action.payload;
+      .addCase('SET_SORT_TYPE', (state, action) => {
+        state.sortType = (action as { type: 'SET_SORT_TYPE'; payload: SortType }).payload;
       })
-      .addCase(setOffersLoadingStatus, (state, action: PayloadAction<boolean>) => {
-        state.isOffersLoading = action.payload;
+      .addCase('SET_OFFERS_LOADING_STATUS', (state, action) => {
+        state.isOffersLoading = (action as { type: 'SET_OFFERS_LOADING_STATUS'; payload: boolean }).payload;
       });
   },
 });

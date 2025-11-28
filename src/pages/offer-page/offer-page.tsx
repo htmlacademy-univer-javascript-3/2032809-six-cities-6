@@ -1,14 +1,16 @@
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import CommentForm from '../../components/comment-form/comment-form.tsx';
 import ReviewsList from '../../components/reviews-list/reviews-list.tsx';
 import Map from '../../components/map/map.tsx';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import { Link } from 'react-router-dom';
-import { offers } from '../../mocks/offers';
+import type { RootState } from '../../store/index';
 import { reviews } from '../../mocks/reviews';
 
 function OfferPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
+  const offers = useSelector((state: RootState) => state.offers);
   const currentOffer = offers.find((offer) => offer.id === id);
   const nearbyOffers = offers.filter((offer) => offer.id !== id).slice(0, 3);
 

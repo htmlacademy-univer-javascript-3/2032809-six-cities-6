@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import Map from '../../components/map/map.tsx';
 import CitiesList from '../../components/cities-list/cities-list.tsx';
+import SortOptions from '../../components/sort-options/sort-options.tsx';
 import { Link } from 'react-router-dom';
 import type { RootState } from '../../store/index';
 import type { Offer, City } from '../../types/offer';
+import type { SortType } from '../../store/action';
 
 const CITY_COORDINATES: Record<City['name'], { latitude: number; longitude: number; zoom: number }> = {
   Paris: { latitude: 48.85661, longitude: 2.351499, zoom: 13 },
@@ -15,10 +18,30 @@ const CITY_COORDINATES: Record<City['name'], { latitude: number; longitude: numb
   Dusseldorf: { latitude: 51.225402, longitude: 6.776314, zoom: 13 },
 };
 
+function sortOffers(offers: Offer[], sortType: SortType): Offer[] {
+  const sortedOffers = [...offers];
+  switch (sortType) {
+    case 'Popular':
+      return sortedOffers;
+    case 'Price: low to high':
+      return sortedOffers.sort((a, b) => a.price - b.price);
+    case 'Price: high to low':
+      return sortedOffers.sort((a, b) => b.price - a.price);
+    case 'Top rated first':
+      return sortedOffers.sort((a, b) => b.rating - a.rating);
+    default:
+      return sortedOffers;
+  }
+}
+
 function MainPage(): JSX.Element {
   const city = useSelector((state: RootState) => state.city);
   const allOffers = useSelector((state: RootState) => state.offers);
+  const sortType = useSelector((state: RootState) => state.sortType);
+  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+
   const cityOffers = allOffers.filter((offer: Offer) => offer.city.name === city);
+  const sortedOffers = sortOffers(cityOffers, sortType);
   const cityData: City = cityOffers.length > 0
     ? cityOffers[0].city
     : { name: city, location: CITY_COORDINATES[city] };
@@ -70,29 +93,13 @@ function MainPage(): JSX.Element {
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
               <b className="places__found">{cityOffers.length} places to stay in {city}</b>
-              <form className="places__sorting" action="#" method="get">
-                <span className="places__sorting-caption">Sort by</span>
-                <span className="places__sorting-type" tabIndex={0}>
-                  Popular
-                  <svg className="places__sorting-arrow" width="7" height="4">
-                    <use xlinkHref="#icon-arrow-select"></use>
-                  </svg>
-                </span>
-                <ul className="places__options places__options--custom places__options--opened">
-                  <li className="places__option places__option--active" tabIndex={0}>
-                    Popular
-                  </li>
-                  <li className="places__option" tabIndex={0}>Price: low to high</li>
-                  <li className="places__option" tabIndex={0}>Price: high to low</li>
-                  <li className="places__option" tabIndex={0}>Top rated first</li>
-                </ul>
-              </form>
+              <SortOptions />
 
-              <OffersList offers={cityOffers} variant="cities" />
+              <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
             </section>
 
             <div className="cities__right-section">
-              <Map className="cities__map map" city={cityData} offers={cityOffers} />
+              <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
             </div>
           </div>
         </div>

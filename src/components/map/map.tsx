@@ -7,9 +7,22 @@ type MapProps = {
   className?: string;
   city: City;
   offers: Offer[];
+  activeOfferId?: string | null;
 };
 
-function Map({ className, city, offers }: MapProps): JSX.Element {
+const defaultIcon = L.icon({
+  iconUrl: 'img/pin.svg',
+  iconSize: [27, 39],
+  iconAnchor: [13, 39],
+});
+
+const activeIcon = L.icon({
+  iconUrl: 'img/pin-active.svg',
+  iconSize: [27, 39],
+  iconAnchor: [13, 39],
+});
+
+function Map({ className, city, offers, activeOfferId }: MapProps): JSX.Element {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
@@ -50,9 +63,10 @@ function Map({ className, city, offers }: MapProps): JSX.Element {
 
     offers.forEach((offer) => {
       const { latitude, longitude } = offer.location;
-      L.marker([latitude, longitude]).addTo(markersLayerRef.current as L.LayerGroup);
+      const icon = offer.id === activeOfferId ? activeIcon : defaultIcon;
+      L.marker([latitude, longitude], { icon }).addTo(markersLayerRef.current as L.LayerGroup);
     });
-  }, [city, offers]);
+  }, [city, offers, activeOfferId]);
 
   return <section className={className ?? 'map'} ref={mapRef} />;
 }

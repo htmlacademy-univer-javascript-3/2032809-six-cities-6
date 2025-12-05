@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState, useCallback } from 'react';
 import OfferCard from '../offer-card/offer-card.tsx';
 import type { Offer } from '../../types/offer';
 
@@ -11,10 +11,10 @@ type OffersListProps = {
 function OffersList({ offers, variant = 'cities', onActiveChange }: OffersListProps): JSX.Element {
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
-  const handleHover = (offerId: string | null) => {
+  const handleHover = useCallback((offerId: string | null) => {
     setActiveOfferId(offerId);
     onActiveChange?.(offerId);
-  };
+  }, [onActiveChange]);
 
   const wrapperClass = (() => {
     if (variant === 'favorites') {
@@ -37,6 +37,6 @@ function OffersList({ offers, variant = 'cities', onActiveChange }: OffersListPr
   );
 }
 
-export default OffersList;
+export default memo(OffersList);
 
 

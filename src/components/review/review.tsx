@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import type { Review as ReviewType } from '../../types/review';
 
 const MAX_RATING = 5;
@@ -8,8 +9,11 @@ type ReviewProps = {
 
 function Review({ review }: ReviewProps): JSX.Element {
   const { user, rating, comment, date } = review;
-  const reviewDate = new Date(date);
-  const monthYear = reviewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthYear = useMemo(() => {
+    const reviewDate = new Date(date);
+    return reviewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }, [date]);
+  const ratingPercent = useMemo(() => (rating / MAX_RATING) * 100, [rating]);
 
   return (
     <li className="reviews__item">
@@ -22,7 +26,7 @@ function Review({ review }: ReviewProps): JSX.Element {
       <div className="reviews__info">
         <div className="reviews__rating rating">
           <div className="reviews__stars rating__stars">
-            <span style={{ width: `${(rating / MAX_RATING) * 100}%` }}></span>
+            <span style={{ width: `${ratingPercent}%` }}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
@@ -35,5 +39,5 @@ function Review({ review }: ReviewProps): JSX.Element {
   );
 }
 
-export default Review;
+export default memo(Review);
 

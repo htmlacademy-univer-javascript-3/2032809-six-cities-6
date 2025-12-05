@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import MainPage from '../../pages/main-page/main-page';
@@ -7,12 +8,12 @@ import OfferPage from '../../pages/offer-page/offer-page';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import type { RootState } from '../../store/index';
+import { getAuthorizationStatus, getOffers } from '../../store/selectors';
 
 function App(): JSX.Element {
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const offers = useSelector((state: RootState) => state.offers);
-  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const offers = useSelector(getOffers);
+  const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
 
   return (
     <BrowserRouter>

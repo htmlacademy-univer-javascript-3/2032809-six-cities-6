@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import CommentForm from '../../components/comment-form/comment-form.tsx';
@@ -9,7 +9,8 @@ import Spinner from '../../components/spinner/spinner.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { fetchOffer, fetchNearbyOffers, fetchReviews, postComment } from '../../store/action';
-import type { RootState, AppDispatch } from '../../store/index';
+import { getCurrentOffer, getNearbyOffers, getReviews, getAuthorizationStatus } from '../../store/selectors';
+import type { AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
 
@@ -17,11 +18,11 @@ function OfferPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const currentOffer = useSelector((state: RootState) => state.currentOffer);
-  const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
-  const reviews = useSelector((state: RootState) => state.reviews);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
+  const currentOffer = useSelector(getCurrentOffer);
+  const nearbyOffers = useSelector(getNearbyOffers);
+  const reviews = useSelector(getReviews);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
 
   useEffect(() => {
     if (id) {
@@ -42,19 +43,37 @@ function OfferPage(): JSX.Element {
     }
   }, [currentOffer, id, navigate]);
 
-  const handleCommentSubmit = async (rating: number, comment: string) => {
+  const handleCommentSubmit = useCallback(async (rating: number, comment: string) => {
     if (id) {
       await dispatch(postComment(id, { comment, rating }));
     }
-  };
+  }, [id, dispatch]);
+
+  const displayImages = useMemo(() => {
+    if (!currentOffer) {
+      return [];
+    }
+    return currentOffer.images && currentOffer.images.length > 0 ? currentOffer.images.slice(0, 6) : [];
+  }, [currentOffer]);
+  const ratingPercent = useMemo(() => {
+    if (!currentOffer) {
+      return 0;
+    }
+    return (currentOffer.rating / MAX_RATING) * 100;
+  }, [currentOffer]);
+  const mapOffers = useMemo(() => {
+    if (!currentOffer) {
+      return nearbyOffers.slice(0, 3);
+    }
+    return [...nearbyOffers.slice(0, 3), currentOffer];
+  }, [nearbyOffers, currentOffer]);
+  const nearbyOffersForList = useMemo(() => nearbyOffers.slice(0, 3), [nearbyOffers]);
 
   if (!currentOffer) {
     return <Spinner />;
   }
 
-  const { title, description, images, isPremium, rating, type, bedrooms, maxAdults, price, goods, host } = currentOffer;
-  const displayImages = images && images.length > 0 ? images.slice(0, 6) : [];
-  const ratingPercent = (rating / MAX_RATING) * 100;
+  const { title, description, isPremium, rating, type, bedrooms, maxAdults, price, goods, host } = currentOffer;
 
   return (
     <div className="page">
@@ -165,12 +184,12 @@ function OfferPage(): JSX.Element {
               </section>
             </div>
           </div>
-          <Map className="offer__map map" city={currentOffer.city} offers={[...nearbyOffers.slice(0, 3), currentOffer]} activeOfferId={currentOffer.id} />
+          <Map className="offer__map map" city={currentOffer.city} offers={mapOffers} activeOfferId={currentOffer.id} />
         </section>
         <div className="container">
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
-            <OffersList offers={nearbyOffers.slice(0, 3)} variant="near-places" />
+            <OffersList offers={nearbyOffersForList} variant="near-places" />
           </section>
         </div>
       </main>

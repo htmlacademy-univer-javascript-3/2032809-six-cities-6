@@ -106,4 +106,6 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
   );
 }
 
-export default memo(OfferCard);
+const MemoOfferCard = memo(OfferCard);
+
+export default MemoOfferCard;

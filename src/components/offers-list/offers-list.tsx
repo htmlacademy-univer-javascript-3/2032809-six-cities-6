@@ -37,6 +37,6 @@ function OffersList({ offers, variant = 'cities', onActiveChange }: OffersListPr
   );
 }
 
-export default memo(OffersList);
+const MemoOffersList = memo(OffersList);
 
-
+export default MemoOffersList;

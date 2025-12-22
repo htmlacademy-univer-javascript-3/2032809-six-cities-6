@@ -21,10 +21,3 @@ function EmptyMain({ city }: EmptyMainProps): JSX.Element {
 }
 
 export default EmptyMain;
-
-
-
-
-
-
-

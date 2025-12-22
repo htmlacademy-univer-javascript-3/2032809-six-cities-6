@@ -23,5 +23,7 @@ function ReviewsList({ reviews }: ReviewsListProps): JSX.Element {
   );
 }
 
-export default memo(ReviewsList);
+const MemoReviewsList = memo(ReviewsList);
+
+export default MemoReviewsList;
 

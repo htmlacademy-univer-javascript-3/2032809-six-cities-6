@@ -48,5 +48,7 @@ function SortOptions(): JSX.Element {
   );
 }
 
-export default memo(SortOptions);
+const MemoSortOptions = memo(SortOptions);
+
+export default MemoSortOptions;
 

@@ -1,22 +1,33 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
+import { fetchFavoriteOffers } from '../../store/action';
+import { getFavoriteOffers, getFavoriteCount } from '../../store/selectors';
+import type { AppDispatch } from '../../store/index';
 
-type FavoritesPageProps = {
-  offers: Offer[];
-};
+function FavoritesPage(): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const favoriteOffers = useSelector(getFavoriteOffers);
+  const favoriteCount = useSelector(getFavoriteCount);
 
-function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
-  const favoriteOffers = useMemo(() => offers.filter((o) => o.isFavorite), [offers]);
-  const groupedByCity = useMemo(() => favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
-    const cityName = offer.city.name;
-    if (!acc[cityName]) {
-      acc[cityName] = [];
-    }
-    acc[cityName].push(offer);
-    return acc;
-  }, {}), [favoriteOffers]);
+  useEffect(() => {
+    dispatch(fetchFavoriteOffers());
+  }, [dispatch]);
+
+  const groupedByCity = useMemo(
+    () =>
+      favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
+        const cityName = offer.city.name;
+        if (!acc[cityName]) {
+          acc[cityName] = [];
+        }
+        acc[cityName].push(offer);
+        return acc;
+      }, {}),
+    [favoriteOffers]
+  );
   return (
     <div className="page">
       <header className="header">
@@ -34,7 +45,7 @@ function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
                     <div className="header__avatar-wrapper user__avatar-wrapper">
                     </div>
                     <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                    <span className="header__favorite-count">3</span>
+                    <span className="header__favorite-count">{favoriteCount}</span>
                   </Link>
                 </li>
                 <li className="header__nav-item">

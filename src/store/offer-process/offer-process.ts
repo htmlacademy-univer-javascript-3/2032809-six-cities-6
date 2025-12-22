@@ -28,6 +28,15 @@ const offerProcessSlice = createSlice({
       })
       .addCase('LOAD_REVIEWS', (state, action) => {
         state.reviews = (action as { type: 'LOAD_REVIEWS'; payload: Review[] }).payload;
+      })
+      .addCase('UPDATE_OFFER_FAVORITE_STATUS', (state, action) => {
+        const { offerId, isFavorite } = (action as { type: 'UPDATE_OFFER_FAVORITE_STATUS'; payload: { offerId: string; isFavorite: boolean } }).payload;
+        state.nearbyOffers = state.nearbyOffers.map((offer) =>
+          offer.id === offerId ? { ...offer, isFavorite } : offer
+        );
+        if (state.currentOffer?.id === offerId) {
+          state.currentOffer = { ...state.currentOffer, isFavorite };
+        }
       });
   },
 });

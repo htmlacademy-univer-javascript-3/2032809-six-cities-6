@@ -15,6 +15,6 @@ function PrivateRoute({ children }: PrivateRouteProps): JSX.Element {
   return isAuthorized ? children : <Navigate to={AppRoute.Login} />;
 }
 
-export default memo(PrivateRoute);
+const MemoPrivateRoute = memo(PrivateRoute);
 
-
+export default MemoPrivateRoute;

@@ -5,10 +5,11 @@ import Map from '../../components/map/map.tsx';
 import CitiesList from '../../components/cities-list/cities-list.tsx';
 import SortOptions from '../../components/sort-options/sort-options.tsx';
 import Spinner from '../../components/spinner/spinner.tsx';
+import EmptyMain from '../../components/empty-main/empty-main.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { logout } from '../../store/action';
-import { getSortedCityOffers, getCityData, getCity, getIsOffersLoading, getAuthorizationStatus } from '../../store/selectors';
+import { getSortedCityOffers, getCityData, getCity, getIsOffersLoading, getAuthorizationStatus, getFavoriteCount } from '../../store/selectors';
 
 function MainPage(): JSX.Element {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function MainPage(): JSX.Element {
   const cityData = useSelector(getCityData);
   const isOffersLoading = useSelector(getIsOffersLoading);
   const authorizationStatus = useSelector(getAuthorizationStatus);
+  const favoriteCount = useSelector(getFavoriteCount);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
@@ -29,6 +31,36 @@ function MainPage(): JSX.Element {
   const handleActiveOfferChange = useCallback((offerId: string | null) => {
     setActiveOfferId(offerId);
   }, []);
+
+  const renderContent = () => {
+    if (isOffersLoading) {
+      return (
+        <div className="cities__places-container container">
+          <Spinner />
+        </div>
+      );
+    }
+
+    if (cityOffersCount === 0) {
+      return <EmptyMain city={city} />;
+    }
+
+    return (
+      <div className="cities__places-container container">
+        <section className="cities__places places">
+          <h2 className="visually-hidden">Places</h2>
+          <b className="places__found">{cityOffersCount} places to stay in {city}</b>
+          <SortOptions />
+
+          <OffersList offers={sortedOffers} variant="cities" onActiveChange={handleActiveOfferChange} />
+        </section>
+
+        <div className="cities__right-section">
+          <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="page page--gray page--main">
@@ -54,7 +86,7 @@ function MainPage(): JSX.Element {
                       <Link className="header__nav-link header__nav-link--profile" to={AppRoute.Favorites}>
                         <div className="header__avatar-wrapper user__avatar-wrapper"></div>
                         <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                        <span className="header__favorite-count">3</span>
+                        <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>
                     <li className="header__nav-item">
@@ -83,25 +115,7 @@ function MainPage(): JSX.Element {
         </div>
 
         <div className="cities">
-          <div className="cities__places-container container">
-            {isOffersLoading ? (
-              <Spinner />
-            ) : (
-              <>
-                <section className="cities__places places">
-                  <h2 className="visually-hidden">Places</h2>
-                  <b className="places__found">{cityOffersCount} places to stay in {city}</b>
-                  <SortOptions />
-
-                  <OffersList offers={sortedOffers} variant="cities" onActiveChange={handleActiveOfferChange} />
-                </section>
-
-                <div className="cities__right-section">
-                  <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
-                </div>
-              </>
-            )}
-          </div>
+          {renderContent()}
         </div>
       </main>
     </div>

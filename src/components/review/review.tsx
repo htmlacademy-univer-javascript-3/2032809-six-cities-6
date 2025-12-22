@@ -39,5 +39,7 @@ function Review({ review }: ReviewProps): JSX.Element {
   );
 }
 
-export default memo(Review);
+const MemoReview = memo(Review);
+
+export default MemoReview;
 

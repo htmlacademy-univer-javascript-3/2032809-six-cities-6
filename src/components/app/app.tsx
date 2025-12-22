@@ -8,11 +8,10 @@ import OfferPage from '../../pages/offer-page/offer-page';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import { getAuthorizationStatus, getOffers } from '../../store/selectors';
+import { getAuthorizationStatus } from '../../store/selectors';
 
 function App(): JSX.Element {
   const authorizationStatus = useSelector(getAuthorizationStatus);
-  const offers = useSelector(getOffers);
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
 
   return (
@@ -27,7 +26,7 @@ function App(): JSX.Element {
           path={AppRoute.Favorites}
           element={
             <PrivateRoute>
-              <FavoritesPage offers={offers} />
+              <FavoritesPage />
             </PrivateRoute>
           }
         />

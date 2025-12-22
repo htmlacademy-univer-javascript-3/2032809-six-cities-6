@@ -1,7 +1,11 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { AppRoute } from '../../const';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppRoute, AuthorizationStatus } from '../../const';
+import { toggleFavoriteStatus } from '../../store/action';
+import { getAuthorizationStatus } from '../../store/selectors';
 import type { Offer } from '../../types/offer';
+import type { AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
 
@@ -12,6 +16,9 @@ type OfferCardProps = {
 };
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const authorizationStatus = useSelector(getAuthorizationStatus);
   const { id, isPremium, images, previewImage, price, isFavorite, rating, title, type } = offer;
   const imageUrl = useMemo(() => previewImage || (images && images.length > 0 ? images[0] : ''), [previewImage, images]);
   const wrapperClass = useMemo(() => {
@@ -33,6 +40,15 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
   }, [onHover]);
 
   const ratingPercent = useMemo(() => (rating / MAX_RATING) * 100, [rating]);
+
+  const handleFavoriteClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (authorizationStatus !== AuthorizationStatus.Auth) {
+      navigate(AppRoute.Login);
+      return;
+    }
+    dispatch(toggleFavoriteStatus(id, isFavorite));
+  }, [authorizationStatus, dispatch, id, isFavorite, navigate]);
 
   return (
     <article
@@ -63,6 +79,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
               isFavorite ? 'place-card__bookmark-button--active' : ''
             }`}
             type="button"
+            onClick={handleFavoriteClick}
           >
             <svg className="place-card__bookmark-icon" width={18} height={19}>
               <use xlinkHref="#icon-bookmark"></use>
@@ -89,4 +106,6 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
   );
 }
 
-export default memo(OfferCard);
+const MemoOfferCard = memo(OfferCard);
+
+export default MemoOfferCard;

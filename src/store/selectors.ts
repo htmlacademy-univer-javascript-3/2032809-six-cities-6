@@ -20,6 +20,8 @@ export const getAuthorizationStatus = (state: RootState) => state.userProcess.au
 export const getCurrentOffer = (state: RootState) => state.offerProcess.currentOffer;
 export const getNearbyOffers = (state: RootState) => state.offerProcess.nearbyOffers;
 export const getReviews = (state: RootState) => state.offerProcess.reviews;
+export const getFavoriteOffers = (state: RootState) => state.offersProcess.favoriteOffers;
+export const getFavoriteCount = (state: RootState) => state.offersProcess.favoriteCount;
 
 export const getCityOffers = createSelector(
   [getOffers, getCity],

@@ -8,8 +8,8 @@ import OffersList from '../../components/offers-list/offers-list.tsx';
 import Spinner from '../../components/spinner/spinner.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import { fetchOffer, fetchNearbyOffers, fetchReviews, postComment } from '../../store/action';
-import { getCurrentOffer, getNearbyOffers, getReviews, getAuthorizationStatus } from '../../store/selectors';
+import { fetchOffer, fetchNearbyOffers, fetchReviews, postComment, toggleFavoriteStatus } from '../../store/action';
+import { getCurrentOffer, getNearbyOffers, getReviews, getAuthorizationStatus, getFavoriteCount } from '../../store/selectors';
 import type { AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
@@ -22,6 +22,7 @@ function OfferPage(): JSX.Element {
   const nearbyOffers = useSelector(getNearbyOffers);
   const reviews = useSelector(getReviews);
   const authorizationStatus = useSelector(getAuthorizationStatus);
+  const favoriteCount = useSelector(getFavoriteCount);
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
 
   useEffect(() => {
@@ -69,6 +70,17 @@ function OfferPage(): JSX.Element {
   }, [nearbyOffers, currentOffer]);
   const nearbyOffersForList = useMemo(() => nearbyOffers.slice(0, 3), [nearbyOffers]);
 
+  const handleFavoriteClick = useCallback(() => {
+    if (!currentOffer) {
+      return;
+    }
+    if (authorizationStatus !== AuthorizationStatus.Auth) {
+      navigate(AppRoute.Login);
+      return;
+    }
+    dispatch(toggleFavoriteStatus(currentOffer.id, currentOffer.isFavorite));
+  }, [authorizationStatus, currentOffer, dispatch, navigate]);
+
   if (!currentOffer) {
     return <Spinner />;
   }
@@ -92,7 +104,7 @@ function OfferPage(): JSX.Element {
                     <div className="header__avatar-wrapper user__avatar-wrapper">
                     </div>
                     <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                    <span className="header__favorite-count">3</span>
+                    <span className="header__favorite-count">{favoriteCount}</span>
                   </a>
                 </li>
                 <li className="header__nav-item">
@@ -126,11 +138,17 @@ function OfferPage(): JSX.Element {
               )}
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">{title}</h1>
-                <button className="offer__bookmark-button button" type="button">
+                <button
+                  className={`offer__bookmark-button button ${currentOffer.isFavorite ? 'offer__bookmark-button--active' : ''}`}
+                  type="button"
+                  onClick={handleFavoriteClick}
+                >
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
                   </svg>
-                  <span className="visually-hidden">To bookmarks</span>
+                  <span className="visually-hidden">
+                    {currentOffer.isFavorite ? 'In bookmarks' : 'To bookmarks'}
+                  </span>
                 </button>
               </div>
               <div className="offer__rating rating">

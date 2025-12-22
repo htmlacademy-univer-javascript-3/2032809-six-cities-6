@@ -9,6 +9,8 @@ type OffersProcessState = {
   offers: Offer[];
   sortType: SortType;
   isOffersLoading: boolean;
+  favoriteOffers: Offer[];
+  favoriteCount: number;
 };
 
 const initialState: OffersProcessState = {
@@ -16,6 +18,8 @@ const initialState: OffersProcessState = {
   offers: [],
   sortType: 'Popular',
   isOffersLoading: false,
+  favoriteOffers: [],
+  favoriteCount: 0,
 };
 
 const offersProcessSlice = createSlice({
@@ -35,6 +39,18 @@ const offersProcessSlice = createSlice({
       })
       .addCase('SET_OFFERS_LOADING_STATUS', (state, action) => {
         state.isOffersLoading = (action as { type: 'SET_OFFERS_LOADING_STATUS'; payload: boolean }).payload;
+      })
+      .addCase('LOAD_FAVORITE_OFFERS', (state, action) => {
+        const favoriteOffers = (action as { type: 'LOAD_FAVORITE_OFFERS'; payload: Offer[] }).payload;
+        state.favoriteOffers = favoriteOffers;
+        state.favoriteCount = favoriteOffers.length;
+      })
+      .addCase('UPDATE_OFFER_FAVORITE_STATUS', (state, action) => {
+        const { offerId, isFavorite } = (action as { type: 'UPDATE_OFFER_FAVORITE_STATUS'; payload: { offerId: string; isFavorite: boolean } }).payload;
+        state.offers = state.offers.map((offer) =>
+          offer.id === offerId ? { ...offer, isFavorite } : offer
+        );
+        // favoriteOffers обновятся после fetchFavoriteOffers
       });
   },
 });

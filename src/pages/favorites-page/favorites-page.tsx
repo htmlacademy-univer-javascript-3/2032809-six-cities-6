@@ -1,28 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 import { fetchFavoriteOffers } from '../../store/action';
-import type { RootState, AppDispatch } from '../../store/index';
+import { getFavoriteOffers, getFavoriteCount } from '../../store/selectors';
+import type { AppDispatch } from '../../store/index';
 
 function FavoritesPage(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const favoriteOffers = useSelector((state: RootState) => state.favoriteOffers);
-  const favoriteCount = useSelector((state: RootState) => state.favoriteCount);
+  const favoriteOffers = useSelector(getFavoriteOffers);
+  const favoriteCount = useSelector(getFavoriteCount);
 
   useEffect(() => {
     dispatch(fetchFavoriteOffers());
   }, [dispatch]);
 
-  const groupedByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
-    const cityName = offer.city.name;
-    if (!acc[cityName]) {
-      acc[cityName] = [];
-    }
-    acc[cityName].push(offer);
-    return acc;
-  }, {});
+  const groupedByCity = useMemo(
+    () =>
+      favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
+        const cityName = offer.city.name;
+        if (!acc[cityName]) {
+          acc[cityName] = [];
+        }
+        acc[cityName].push(offer);
+        return acc;
+      }, {}),
+    [favoriteOffers]
+  );
   return (
     <div className="page">
       <header className="header">

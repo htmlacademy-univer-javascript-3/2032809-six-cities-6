@@ -1,17 +1,18 @@
+import { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeCity } from '../../store/action';
-import type { RootState } from '../../store/index';
+import { getCity } from '../../store/selectors';
 import type { City } from '../../types/offer';
 
 const CITIES: City['name'][] = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
 
 function CitiesList(): JSX.Element {
   const dispatch = useDispatch();
-  const currentCity = useSelector((state: RootState) => state.city);
+  const currentCity = useSelector(getCity);
 
-  const handleCityClick = (city: City['name']) => {
+  const handleCityClick = useCallback((city: City['name']) => {
     dispatch(changeCity(city));
-  };
+  }, [dispatch]);
 
   return (
     <section className="locations container">
@@ -35,5 +36,5 @@ function CitiesList(): JSX.Element {
   );
 }
 
-export default CitiesList;
+export default memo(CitiesList);
 

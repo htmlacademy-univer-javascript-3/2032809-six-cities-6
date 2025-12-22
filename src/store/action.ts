@@ -159,9 +159,8 @@ export const toggleFavoriteStatus = (id: string, isFavorite: boolean) => async (
     const status = isFavorite ? 0 : 1;
     const { data } = await api.post<Offer>(`/favorite/${id}/${status}`);
     dispatch(updateOfferFavoriteStatus(id, !isFavorite));
-    // Обновляем текущее предложение, если оно открыто
     const state = _getState();
-    if (state.currentOffer?.id === id) {
+    if (state.offerProcess.currentOffer?.id === id) {
       dispatch(loadOffer(data));
     }
     // Обновляем список избранных для обновления счетчика

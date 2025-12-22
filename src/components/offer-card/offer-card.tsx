@@ -1,9 +1,11 @@
+import { memo, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { toggleFavoriteStatus } from '../../store/action';
+import { getAuthorizationStatus } from '../../store/selectors';
 import type { Offer } from '../../types/offer';
-import type { RootState, AppDispatch } from '../../store/index';
+import type { AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
 
@@ -16,30 +18,43 @@ type OfferCardProps = {
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
   const { id, isPremium, images, previewImage, price, isFavorite, rating, title, type } = offer;
-  const imageUrl = previewImage || (images && images.length > 0 ? images[0] : '');
-  let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
-  if (variant === 'favorites') {
-    wrapperClass = 'favorites__image-wrapper place-card__image-wrapper';
-  } else if (variant === 'near-places') {
-    wrapperClass = 'near-places__image-wrapper place-card__image-wrapper';
-  }
+  const imageUrl = useMemo(() => previewImage || (images && images.length > 0 ? images[0] : ''), [previewImage, images]);
+  const wrapperClass = useMemo(() => {
+    if (variant === 'favorites') {
+      return 'favorites__image-wrapper place-card__image-wrapper';
+    }
+    if (variant === 'near-places') {
+      return 'near-places__image-wrapper place-card__image-wrapper';
+    }
+    return 'cities__image-wrapper place-card__image-wrapper';
+  }, [variant]);
 
-  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseEnter = useCallback(() => {
+    onHover?.(id);
+  }, [onHover, id]);
+
+  const handleMouseLeave = useCallback(() => {
+    onHover?.(null);
+  }, [onHover]);
+
+  const ratingPercent = useMemo(() => (rating / MAX_RATING) * 100, [rating]);
+
+  const handleFavoriteClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (authorizationStatus !== AuthorizationStatus.Auth) {
       navigate(AppRoute.Login);
       return;
     }
     dispatch(toggleFavoriteStatus(id, isFavorite));
-  };
+  }, [authorizationStatus, dispatch, id, isFavorite, navigate]);
 
   return (
     <article
       className={`${variant}__card place-card`}
-      onMouseEnter={() => onHover?.(id)}
-      onMouseLeave={() => onHover?.(null)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {isPremium && (
         <div className="place-card__mark">
@@ -77,7 +92,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
 
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{ width: `${(rating / MAX_RATING) * 100}%` }}></span>
+            <span style={{ width: `${ratingPercent}%` }}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
@@ -91,4 +106,4 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
   );
 }
 
-export default OfferCard;
+export default memo(OfferCard);

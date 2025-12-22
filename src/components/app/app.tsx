@@ -11,7 +11,6 @@ import type { RootState } from '../../store/index';
 
 function App(): JSX.Element {
   const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const offers = useSelector((state: RootState) => state.offers);
   const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
 
   return (
@@ -26,7 +25,7 @@ function App(): JSX.Element {
           path={AppRoute.Favorites}
           element={
             <PrivateRoute>
-              <FavoritesPage offers={offers} />
+              <FavoritesPage />
             </PrivateRoute>
           }
         />

@@ -1,6 +1,6 @@
 import type { City, Offer } from '../types/offer';
 import type { Review } from '../types/review';
-import { changeCity, loadOffers, setSortType, setOffersLoadingStatus, requireAuthorization, loadOffer, loadNearbyOffers, loadReviews, type SortType } from './action';
+import { changeCity, loadOffers, setSortType, setOffersLoadingStatus, requireAuthorization, loadOffer, loadNearbyOffers, loadReviews, loadFavoriteOffers, updateOfferFavoriteStatus, type SortType } from './action';
 import { AuthorizationStatus } from '../const';
 
 type CityName = City['name'];
@@ -14,6 +14,8 @@ type State = {
   currentOffer: Offer | null;
   nearbyOffers: Offer[];
   reviews: Review[];
+  favoriteOffers: Offer[];
+  favoriteCount: number;
 };
 
 const initialState: State = {
@@ -25,9 +27,11 @@ const initialState: State = {
   currentOffer: null,
   nearbyOffers: [],
   reviews: [],
+  favoriteOffers: [],
+  favoriteCount: 0,
 };
 
-type Action = ReturnType<typeof changeCity> | ReturnType<typeof loadOffers> | ReturnType<typeof setSortType> | ReturnType<typeof setOffersLoadingStatus> | ReturnType<typeof requireAuthorization> | ReturnType<typeof loadOffer> | ReturnType<typeof loadNearbyOffers> | ReturnType<typeof loadReviews>;
+type Action = ReturnType<typeof changeCity> | ReturnType<typeof loadOffers> | ReturnType<typeof setSortType> | ReturnType<typeof setOffersLoadingStatus> | ReturnType<typeof requireAuthorization> | ReturnType<typeof loadOffer> | ReturnType<typeof loadNearbyOffers> | ReturnType<typeof loadReviews> | ReturnType<typeof loadFavoriteOffers> | ReturnType<typeof updateOfferFavoriteStatus>;
 
 function reducer(state = initialState, action: Action): State {
   switch (action.type) {
@@ -47,6 +51,26 @@ function reducer(state = initialState, action: Action): State {
       return { ...state, nearbyOffers: action.payload };
     case 'LOAD_REVIEWS':
       return { ...state, reviews: action.payload };
+    case 'LOAD_FAVORITE_OFFERS':
+      return { ...state, favoriteOffers: action.payload, favoriteCount: action.payload.length };
+    case 'UPDATE_OFFER_FAVORITE_STATUS': {
+      const { offerId, isFavorite } = action.payload;
+      const updatedOffers = state.offers.map((offer) =>
+        offer.id === offerId ? { ...offer, isFavorite } : offer
+      );
+      const updatedNearbyOffers = state.nearbyOffers.map((offer) =>
+        offer.id === offerId ? { ...offer, isFavorite } : offer
+      );
+      const updatedCurrentOffer = state.currentOffer?.id === offerId
+        ? { ...state.currentOffer, isFavorite }
+        : state.currentOffer;
+      return {
+        ...state,
+        offers: updatedOffers,
+        nearbyOffers: updatedNearbyOffers,
+        currentOffer: updatedCurrentOffer,
+      };
+    }
     default:
       return state;
   }

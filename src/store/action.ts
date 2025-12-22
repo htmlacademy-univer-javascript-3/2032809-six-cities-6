@@ -54,6 +54,8 @@ export const checkAuth = () => async (dispatch: AppDispatch, _getState: () => Ro
   try {
     await api.get<AuthInfo>('/login');
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    // Загружаем избранные предложения для авторизованного пользователя
+    await dispatch(fetchFavoriteOffers());
   } catch {
     dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
   }
@@ -64,6 +66,8 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
     const { data } = await api.post<AuthInfo>('/login', { email, password });
     localStorage.setItem('six-cities-token', data.token);
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    // Загружаем избранные предложения после успешного логина
+    await dispatch(fetchFavoriteOffers());
   } catch {
     dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
     throw new Error('Failed to login');
@@ -128,6 +132,42 @@ export const postComment = (id: string, commentData: CommentData) => async (disp
     await dispatch(fetchReviews(id));
   } catch {
     throw new Error('Failed to post comment');
+  }
+};
+
+export const loadFavoriteOffers = (offers: Offer[]) => ({
+  type: 'LOAD_FAVORITE_OFFERS' as const,
+  payload: offers,
+});
+
+export const updateOfferFavoriteStatus = (offerId: string, isFavorite: boolean) => ({
+  type: 'UPDATE_OFFER_FAVORITE_STATUS' as const,
+  payload: { offerId, isFavorite },
+});
+
+export const fetchFavoriteOffers = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Offer[]>('/favorite');
+    dispatch(loadFavoriteOffers(data));
+  } catch {
+    dispatch(loadFavoriteOffers([]));
+  }
+};
+
+export const toggleFavoriteStatus = (id: string, isFavorite: boolean) => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const status = isFavorite ? 0 : 1;
+    const { data } = await api.post<Offer>(`/favorite/${id}/${status}`);
+    dispatch(updateOfferFavoriteStatus(id, !isFavorite));
+    // Обновляем текущее предложение, если оно открыто
+    const state = _getState();
+    if (state.currentOffer?.id === id) {
+      dispatch(loadOffer(data));
+    }
+    // Обновляем список избранных для обновления счетчика
+    await dispatch(fetchFavoriteOffers());
+  } catch {
+    throw new Error('Failed to toggle favorite status');
   }
 };
 

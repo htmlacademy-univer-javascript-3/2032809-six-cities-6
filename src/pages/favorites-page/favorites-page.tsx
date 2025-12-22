@@ -1,13 +1,20 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import OffersList from '../../components/offers-list/offers-list.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
+import { fetchFavoriteOffers } from '../../store/action';
+import type { RootState, AppDispatch } from '../../store/index';
 
-type FavoritesPageProps = {
-  offers: Offer[];
-};
+function FavoritesPage(): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const favoriteOffers = useSelector((state: RootState) => state.favoriteOffers);
+  const favoriteCount = useSelector((state: RootState) => state.favoriteCount);
 
-function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
-  const favoriteOffers = offers.filter((o) => o.isFavorite);
+  useEffect(() => {
+    dispatch(fetchFavoriteOffers());
+  }, [dispatch]);
+
   const groupedByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
     const cityName = offer.city.name;
     if (!acc[cityName]) {
@@ -33,7 +40,7 @@ function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
                     <div className="header__avatar-wrapper user__avatar-wrapper">
                     </div>
                     <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                    <span className="header__favorite-count">3</span>
+                    <span className="header__favorite-count">{favoriteCount}</span>
                   </Link>
                 </li>
                 <li className="header__nav-item">

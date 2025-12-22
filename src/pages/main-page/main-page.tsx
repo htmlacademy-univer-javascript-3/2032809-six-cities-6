@@ -5,6 +5,7 @@ import Map from '../../components/map/map.tsx';
 import CitiesList from '../../components/cities-list/cities-list.tsx';
 import SortOptions from '../../components/sort-options/sort-options.tsx';
 import Spinner from '../../components/spinner/spinner.tsx';
+import EmptyMain from '../../components/empty-main/empty-main.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { logout } from '../../store/action';
@@ -44,6 +45,7 @@ function MainPage(): JSX.Element {
   const sortType = useSelector((state: RootState) => state.sortType);
   const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
   const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const favoriteCount = useSelector((state: RootState) => state.favoriteCount);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
@@ -81,7 +83,7 @@ function MainPage(): JSX.Element {
                       <Link className="header__nav-link header__nav-link--profile" to={AppRoute.Favorites}>
                         <div className="header__avatar-wrapper user__avatar-wrapper"></div>
                         <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                        <span className="header__favorite-count">3</span>
+                        <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>
                     <li className="header__nav-item">
@@ -110,25 +112,27 @@ function MainPage(): JSX.Element {
         </div>
 
         <div className="cities">
-          <div className="cities__places-container container">
-            {isOffersLoading ? (
+          {isOffersLoading ? (
+            <div className="cities__places-container container">
               <Spinner />
-            ) : (
-              <>
-                <section className="cities__places places">
-                  <h2 className="visually-hidden">Places</h2>
-                  <b className="places__found">{cityOffers.length} places to stay in {city}</b>
-                  <SortOptions />
+            </div>
+          ) : cityOffers.length === 0 ? (
+            <EmptyMain city={city} />
+          ) : (
+            <div className="cities__places-container container">
+              <section className="cities__places places">
+                <h2 className="visually-hidden">Places</h2>
+                <b className="places__found">{cityOffers.length} places to stay in {city}</b>
+                <SortOptions />
 
-                  <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
-                </section>
+                <OffersList offers={sortedOffers} variant="cities" onActiveChange={setActiveOfferId} />
+              </section>
 
-                <div className="cities__right-section">
-                  <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
-                </div>
-              </>
-            )}
-          </div>
+              <div className="cities__right-section">
+                <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom';
-import { AppRoute } from '../../const';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppRoute, AuthorizationStatus } from '../../const';
+import { toggleFavoriteStatus } from '../../store/action';
 import type { Offer } from '../../types/offer';
+import type { RootState, AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
 
@@ -11,6 +14,9 @@ type OfferCardProps = {
 };
 
 function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
   const { id, isPremium, images, previewImage, price, isFavorite, rating, title, type } = offer;
   const imageUrl = previewImage || (images && images.length > 0 ? images[0] : '');
   let wrapperClass = 'cities__image-wrapper place-card__image-wrapper';
@@ -19,6 +25,15 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
   } else if (variant === 'near-places') {
     wrapperClass = 'near-places__image-wrapper place-card__image-wrapper';
   }
+
+  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (authorizationStatus !== AuthorizationStatus.Auth) {
+      navigate(AppRoute.Login);
+      return;
+    }
+    dispatch(toggleFavoriteStatus(id, isFavorite));
+  };
 
   return (
     <article
@@ -49,6 +64,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
               isFavorite ? 'place-card__bookmark-button--active' : ''
             }`}
             type="button"
+            onClick={handleFavoriteClick}
           >
             <svg className="place-card__bookmark-icon" width={18} height={19}>
               <use xlinkHref="#icon-bookmark"></use>

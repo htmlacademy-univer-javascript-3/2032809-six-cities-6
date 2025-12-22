@@ -32,6 +32,36 @@ function MainPage(): JSX.Element {
     setActiveOfferId(offerId);
   }, []);
 
+  const renderContent = () => {
+    if (isOffersLoading) {
+      return (
+        <div className="cities__places-container container">
+          <Spinner />
+        </div>
+      );
+    }
+
+    if (cityOffersCount === 0) {
+      return <EmptyMain city={city} />;
+    }
+
+    return (
+      <div className="cities__places-container container">
+        <section className="cities__places places">
+          <h2 className="visually-hidden">Places</h2>
+          <b className="places__found">{cityOffersCount} places to stay in {city}</b>
+          <SortOptions />
+
+          <OffersList offers={sortedOffers} variant="cities" onActiveChange={handleActiveOfferChange} />
+        </section>
+
+        <div className="cities__right-section">
+          <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="page page--gray page--main">
       <header className="header">
@@ -85,27 +115,7 @@ function MainPage(): JSX.Element {
         </div>
 
         <div className="cities">
-          {isOffersLoading ? (
-            <div className="cities__places-container container">
-              <Spinner />
-            </div>
-          ) : cityOffersCount === 0 ? (
-            <EmptyMain city={city} />
-          ) : (
-            <div className="cities__places-container container">
-              <section className="cities__places places">
-                <h2 className="visually-hidden">Places</h2>
-                <b className="places__found">{cityOffersCount} places to stay in {city}</b>
-                <SortOptions />
-
-                <OffersList offers={sortedOffers} variant="cities" onActiveChange={handleActiveOfferChange} />
-              </section>
-
-              <div className="cities__right-section">
-                <Map className="cities__map map" city={cityData} offers={sortedOffers} activeOfferId={activeOfferId} />
-              </div>
-            </div>
-          )}
+          {renderContent()}
         </div>
       </main>
     </div>

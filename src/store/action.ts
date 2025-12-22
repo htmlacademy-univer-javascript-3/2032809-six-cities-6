@@ -23,6 +23,25 @@ export const loadOffers = (offers: Offer[]) => ({
   payload: offers,
 });
 
+export const loadFavoriteOffers = (offers: Offer[]) => ({
+  type: 'LOAD_FAVORITE_OFFERS' as const,
+  payload: offers,
+});
+
+export const updateOfferFavoriteStatus = (offerId: string, isFavorite: boolean) => ({
+  type: 'UPDATE_OFFER_FAVORITE_STATUS' as const,
+  payload: { offerId, isFavorite },
+});
+
+export const fetchFavoriteOffers = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Offer[]>('/favorite');
+    dispatch(loadFavoriteOffers(data));
+  } catch {
+    dispatch(loadFavoriteOffers([]));
+  }
+};
+
 export const setSortType = (sortType: SortType) => ({
   type: 'SET_SORT_TYPE' as const,
   payload: sortType,
@@ -132,25 +151,6 @@ export const postComment = (id: string, commentData: CommentData) => async (disp
     await dispatch(fetchReviews(id));
   } catch {
     throw new Error('Failed to post comment');
-  }
-};
-
-export const loadFavoriteOffers = (offers: Offer[]) => ({
-  type: 'LOAD_FAVORITE_OFFERS' as const,
-  payload: offers,
-});
-
-export const updateOfferFavoriteStatus = (offerId: string, isFavorite: boolean) => ({
-  type: 'UPDATE_OFFER_FAVORITE_STATUS' as const,
-  payload: { offerId, isFavorite },
-});
-
-export const fetchFavoriteOffers = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
-  try {
-    const { data } = await api.get<Offer[]>('/favorite');
-    dispatch(loadFavoriteOffers(data));
-  } catch {
-    dispatch(loadFavoriteOffers([]));
   }
 };
 

@@ -13,7 +13,7 @@ function Review({ review }: ReviewProps): JSX.Element {
     const reviewDate = new Date(date);
     return reviewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }, [date]);
-  const ratingPercent = useMemo(() => (rating / MAX_RATING) * 100, [rating]);
+  const ratingPercent = useMemo(() => (Math.round(rating) / MAX_RATING) * 100, [rating]);
 
   return (
     <li className="reviews__item">

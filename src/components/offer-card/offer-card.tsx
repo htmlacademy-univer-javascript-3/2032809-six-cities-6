@@ -39,7 +39,7 @@ function OfferCard({ offer, onHover, variant = 'cities' }: OfferCardProps): JSX.
     onHover?.(null);
   }, [onHover]);
 
-  const ratingPercent = useMemo(() => (rating / MAX_RATING) * 100, [rating]);
+  const ratingPercent = useMemo(() => (Math.round(rating) / MAX_RATING) * 100, [rating]);
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

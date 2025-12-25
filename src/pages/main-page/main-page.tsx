@@ -9,20 +9,24 @@ import EmptyMain from '../../components/empty-main/empty-main.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { logout } from '../../store/action';
-import { getSortedCityOffers, getCityData, getCity, getIsOffersLoading, getAuthorizationStatus, getFavoriteCount } from '../../store/selectors';
+import { getSortedCityOffers, getCityData, getCity, getIsOffersLoading, getAuthorizationStatus, getFavoriteCount, getUserData, getOffersError } from '../../store/selectors';
+import type { AppDispatch } from '../../store';
 
 function MainPage(): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const city = useSelector(getCity);
   const sortedOffers = useSelector(getSortedCityOffers);
   const cityData = useSelector(getCityData);
   const isOffersLoading = useSelector(getIsOffersLoading);
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const favoriteCount = useSelector(getFavoriteCount);
+  const userData = useSelector(getUserData);
+  const hasOffersError = useSelector(getOffersError);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
   const cityOffersCount = useMemo(() => sortedOffers.length, [sortedOffers.length]);
+  const userEmail = userData?.email ?? '';
 
   const handleLogout = useCallback(() => {
     dispatch(logout());
@@ -33,6 +37,19 @@ function MainPage(): JSX.Element {
   }, []);
 
   const renderContent = () => {
+    if (hasOffersError) {
+      return (
+        <div className="cities__places-container container">
+          <section className="cities__no-places">
+            <div className="cities__status-wrapper tabs__content">
+              <b className="cities__status">Failed to load offers</b>
+              <p className="cities__status-description">Please try again later.</p>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
     if (isOffersLoading) {
       return (
         <div className="cities__places-container container">
@@ -85,7 +102,7 @@ function MainPage(): JSX.Element {
                     <li className="header__nav-item user">
                       <Link className="header__nav-link header__nav-link--profile" to={AppRoute.Favorites}>
                         <div className="header__avatar-wrapper user__avatar-wrapper"></div>
-                        <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
+                        <span className="header__user-name user__name">{userEmail}</span>
                         <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>

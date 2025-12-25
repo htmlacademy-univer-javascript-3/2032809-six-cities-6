@@ -43,17 +43,23 @@ function CommentForm({ onSubmit }: CommentFormProps): JSX.Element {
     1: 'terribly',
   };
 
-  const handleFormSubmit = (evt: FormEvent) => {
-    void handleSubmit(evt);
-  };
-
   return (
-    <form className="reviews__form form" action="#" method="post" onSubmit={handleFormSubmit}>
+    <form className="reviews__form form" action="#" method="post" onSubmit={(evt) => void handleSubmit(evt)}>
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
-      <div className="reviews__rating-form form__rating" onChange={handleRatingChange}>
+      <div className="reviews__rating-form form__rating">
         {[5, 4, 3, 2, 1].map((star) => (
           <span key={star}>
-            <input className="form__rating-input visually-hidden" name="rating" value={star} id={`${star}-stars`} type="radio" checked={rating === star} readOnly />
+            <input
+              className="form__rating-input visually-hidden"
+              name="rating"
+              value={star}
+              id={`${star}-stars`}
+              type="radio"
+              checked={rating === star}
+              onChange={handleRatingChange}
+              disabled={isSubmitting}
+              aria-label={`${star} stars`}
+            />
             <label htmlFor={`${star}-stars`} className="reviews__rating-label form__rating-label" title={titles[star]}>
               <svg className="form__star-image" width="37" height="33">
                 <use xlinkHref="#icon-star"></use>

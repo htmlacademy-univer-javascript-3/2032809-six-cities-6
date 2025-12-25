@@ -1,10 +1,13 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import { login } from '../../store/action';
+import { changeCity, login } from '../../store/action';
 import type { AppDispatch } from '../../store/index';
 import { Link } from 'react-router-dom';
+import type { City } from '../../types/offer';
+
+const CITIES: City['name'][] = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
 
 function LoginPage(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
@@ -12,6 +15,8 @@ function LoginPage(): JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const randomCity = useMemo(() => CITIES[Math.floor(Math.random() * CITIES.length)], []);
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -24,6 +29,12 @@ function LoginPage(): JSX.Element {
 
     if (password.trim() === '') {
       setError('Password cannot consist of spaces only');
+      return;
+    }
+
+    const passwordValid = /^(?=.*[A-Za-z])(?=.*\d).+$/;
+    if (!passwordValid.test(password)) {
+      setError('Password must contain at least one letter and one number');
       return;
     }
 
@@ -99,9 +110,16 @@ function LoginPage(): JSX.Element {
 
           <section className="locations locations--login locations--current">
             <div className="locations__item">
-              <a className="locations__item-link" href="#">
-                <span>Amsterdam</span>
-              </a>
+              <button
+                type="button"
+                className="locations__item-link"
+                onClick={() => {
+                  dispatch(changeCity(randomCity));
+                  navigate(AppRoute.Main);
+                }}
+              >
+                <span>{randomCity}</span>
+              </button>
             </div>
           </section>
         </div>

@@ -65,9 +65,11 @@ export const getInitialRootState = (): RootState => ({
     isOffersLoading: false,
     favoriteOffers: [],
     favoriteCount: 0,
+    offersError: false,
   },
   userProcess: {
     authorizationStatus: AuthorizationStatus.Unknown,
+    userData: null,
   },
   offerProcess: {
     currentOffer: null,

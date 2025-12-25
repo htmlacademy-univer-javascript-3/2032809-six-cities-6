@@ -22,7 +22,7 @@ describe('Component: PrivateRoute', () => {
       </MemoryRouter>,
       {
         preloadedState: {
-          userProcess: { authorizationStatus: AuthorizationStatus.Auth },
+          userProcess: { authorizationStatus: AuthorizationStatus.Auth, userData: null },
         },
       }
     );
@@ -47,7 +47,7 @@ describe('Component: PrivateRoute', () => {
       </MemoryRouter>,
       {
         preloadedState: {
-          userProcess: { authorizationStatus: AuthorizationStatus.NoAuth },
+          userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
         },
       }
     );

@@ -28,7 +28,11 @@ describe('Routing: App', () => {
   it('должен рендерить главную страницу по корневому маршруту', () => {
     window.history.pushState({}, '', AppRoute.Main);
 
-    renderWithProviders(<App />, { preloadedState: getInitialRootState() });
+    renderWithProviders(<App />, {
+      preloadedState: {
+        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
+      },
+    });
 
     expect(screen.getByTestId('main-page')).toBeInTheDocument();
   });
@@ -38,7 +42,7 @@ describe('Routing: App', () => {
 
     renderWithProviders(<App />, {
       preloadedState: {
-        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth },
+        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
       },
     });
 
@@ -50,7 +54,7 @@ describe('Routing: App', () => {
 
     renderWithProviders(<App />, {
       preloadedState: {
-        userProcess: { authorizationStatus: AuthorizationStatus.Auth },
+        userProcess: { authorizationStatus: AuthorizationStatus.Auth, userData: null },
       },
     });
 
@@ -62,7 +66,7 @@ describe('Routing: App', () => {
 
     renderWithProviders(<App />, {
       preloadedState: {
-        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth },
+        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
       },
     });
 
@@ -72,7 +76,11 @@ describe('Routing: App', () => {
   it('должен показывать страницу 404 для неизвестного маршрута', () => {
     window.history.pushState({}, '', '/unknown-route');
 
-    renderWithProviders(<App />, { preloadedState: getInitialRootState() });
+    renderWithProviders(<App />, {
+      preloadedState: {
+        userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
+      },
+    });
 
     expect(screen.getByTestId('not-found-page')).toBeInTheDocument();
   });

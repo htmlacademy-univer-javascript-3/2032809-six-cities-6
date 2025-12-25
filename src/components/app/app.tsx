@@ -9,10 +9,15 @@ import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { getAuthorizationStatus } from '../../store/selectors';
+import Spinner from '../spinner/spinner';
 
 function App(): JSX.Element {
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
+
+  if (authorizationStatus === AuthorizationStatus.Unknown) {
+    return <Spinner />;
+  }
 
   return (
     <BrowserRouter>

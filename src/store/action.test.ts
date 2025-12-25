@@ -15,9 +15,12 @@ import {
   loadOffer,
   loadOffers,
   loadReviews,
+  logout,
   postComment,
   requireAuthorization,
+  setOffersError,
   setOffersLoadingStatus,
+  setUserData,
   toggleFavoriteStatus,
   updateOfferFavoriteStatus,
 } from './action';
@@ -46,6 +49,7 @@ describe('Async actions', () => {
 
     expect(store.getActions()).toEqual([
       setOffersLoadingStatus(true),
+      setOffersError(false),
       loadOffers(offers),
       setOffersLoadingStatus(false),
     ]);
@@ -59,6 +63,8 @@ describe('Async actions', () => {
 
     expect(store.getActions()).toEqual([
       setOffersLoadingStatus(true),
+      setOffersError(false),
+      setOffersError(true),
       setOffersLoadingStatus(false),
     ]);
   });
@@ -156,7 +162,8 @@ describe('Async actions', () => {
   });
 
   it('checkAuth: успешная проверка авторизации', async () => {
-    mockAPI.onGet('/login').reply(200, { token: 'test', email: 'a@a.ru' });
+    const user = { token: 'test', email: 'a@a.ru', name: 'Test', avatarUrl: 'avatar.jpg', isPro: false };
+    mockAPI.onGet('/login').reply(200, user);
     const favorites = [makeFakeOffer({ id: 'fav-2' })];
     mockAPI.onGet('/favorite').reply(200, favorites);
 
@@ -165,6 +172,7 @@ describe('Async actions', () => {
 
     expect(store.getActions()).toEqual([
       requireAuthorization(AuthorizationStatus.Auth),
+      setUserData(user),
       loadFavoriteOffers(favorites),
     ]);
   });
@@ -175,7 +183,7 @@ describe('Async actions', () => {
     const store = mockStore(getInitialRootState());
     await store.dispatch(checkAuth());
 
-    expect(store.getActions()).toEqual([requireAuthorization(AuthorizationStatus.NoAuth)]);
+    expect(store.getActions()).toEqual([requireAuthorization(AuthorizationStatus.NoAuth), setUserData(null)]);
   });
 
   it('toggleFavoriteStatus: обновляет статус и счетчик', async () => {
@@ -194,6 +202,19 @@ describe('Async actions', () => {
       updateOfferFavoriteStatus(offerId, true),
       loadOffer(updatedOffer),
       loadFavoriteOffers([updatedOffer]),
+    ]);
+  });
+
+  it('logout: очищает данные пользователя и избранное', async () => {
+    mockAPI.onDelete('/logout').reply(204);
+
+    const store = mockStore(getInitialRootState());
+    await store.dispatch(logout());
+
+    expect(store.getActions()).toEqual([
+      setUserData(null),
+      loadFavoriteOffers([]),
+      requireAuthorization(AuthorizationStatus.NoAuth),
     ]);
   });
 });

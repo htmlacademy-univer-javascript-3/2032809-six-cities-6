@@ -11,7 +11,15 @@ export type SortType = 'Popular' | 'Price: low to high' | 'Price: high to low' |
 export type AuthInfo = {
   email: string;
   token: string;
+  name: string;
+  avatarUrl: string;
+  isPro: boolean;
 };
+
+export const setUserData = (userData: AuthInfo | null) => ({
+  type: 'SET_USER_DATA' as const,
+  payload: userData,
+});
 
 export const changeCity = (city: CityName) => ({
   type: 'CHANGE_CITY' as const,
@@ -52,6 +60,11 @@ export const setOffersLoadingStatus = (isLoading: boolean) => ({
   payload: isLoading,
 });
 
+export const setOffersError = (hasError: boolean) => ({
+  type: 'SET_OFFERS_ERROR' as const,
+  payload: hasError,
+});
+
 export const requireAuthorization = (status: AuthorizationStatus) => ({
   type: 'REQUIRE_AUTHORIZATION' as const,
   payload: status,
@@ -59,11 +72,12 @@ export const requireAuthorization = (status: AuthorizationStatus) => ({
 
 export const fetchOffers = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
   dispatch(setOffersLoadingStatus(true));
+  dispatch(setOffersError(false));
   try {
     const { data } = await api.get<Offer[]>('/offers');
     dispatch(loadOffers(data));
   } catch {
-    // Ошибка загрузки обрабатывается через состояние загрузки
+    dispatch(setOffersError(true));
   } finally {
     dispatch(setOffersLoadingStatus(false));
   }
@@ -71,12 +85,14 @@ export const fetchOffers = () => async (dispatch: AppDispatch, _getState: () => 
 
 export const checkAuth = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
   try {
-    await api.get<AuthInfo>('/login');
+    const { data } = await api.get<AuthInfo>('/login');
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    dispatch(setUserData(data));
     // Загружаем избранные предложения для авторизованного пользователя
     await dispatch(fetchFavoriteOffers());
   } catch {
     dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
+    dispatch(setUserData(null));
   }
 };
 
@@ -85,17 +101,26 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
     const { data } = await api.post<AuthInfo>('/login', { email, password });
     localStorage.setItem('six-cities-token', data.token);
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    dispatch(setUserData(data));
     // Загружаем избранные предложения после успешного логина
     await dispatch(fetchFavoriteOffers());
   } catch {
+    localStorage.removeItem('six-cities-token');
+    dispatch(setUserData(null));
     dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
     throw new Error('Failed to login');
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem('six-cities-token');
-  return requireAuthorization(AuthorizationStatus.NoAuth);
+export const logout = () => async (dispatch: AppDispatch, _getState: () => RootState, api: AxiosInstance) => {
+  try {
+    await api.delete('/logout');
+  } finally {
+    localStorage.removeItem('six-cities-token');
+    dispatch(setUserData(null));
+    dispatch(loadFavoriteOffers([]));
+    dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
+  }
 };
 
 export const loadOffer = (offer: Offer | null) => ({

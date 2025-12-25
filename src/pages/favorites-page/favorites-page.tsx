@@ -4,7 +4,7 @@ import OffersList from '../../components/offers-list/offers-list.tsx';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 import { fetchFavoriteOffers, logout } from '../../store/action';
-import { getAuthorizationStatus, getFavoriteOffers, getFavoriteCount } from '../../store/selectors';
+import { getAuthorizationStatus, getFavoriteOffers, getFavoriteCount, getUserData } from '../../store/selectors';
 import type { AppDispatch } from '../../store/index';
 import { AppRoute, AuthorizationStatus } from '../../const';
 
@@ -13,7 +13,9 @@ function FavoritesPage(): JSX.Element {
   const favoriteOffers = useSelector(getFavoriteOffers);
   const favoriteCount = useSelector(getFavoriteCount);
   const authorizationStatus = useSelector(getAuthorizationStatus);
+  const userData = useSelector(getUserData);
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
+  const userEmail = userData?.email ?? '';
 
   useEffect(() => {
     dispatch(fetchFavoriteOffers());
@@ -55,7 +57,7 @@ function FavoritesPage(): JSX.Element {
                       <Link className="header__nav-link header__nav-link--profile" to={AppRoute.Favorites}>
                         <div className="header__avatar-wrapper user__avatar-wrapper">
                         </div>
-                        <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
+                        <span className="header__user-name user__name">{userEmail}</span>
                         <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>

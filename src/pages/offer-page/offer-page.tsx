@@ -9,7 +9,7 @@ import Spinner from '../../components/spinner/spinner.tsx';
 import { Link } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { fetchOffer, fetchNearbyOffers, fetchReviews, logout, postComment, toggleFavoriteStatus } from '../../store/action';
-import { getCurrentOffer, getNearbyOffers, getReviews, getAuthorizationStatus, getFavoriteCount } from '../../store/selectors';
+import { getCurrentOffer, getNearbyOffers, getReviews, getAuthorizationStatus, getFavoriteCount, getUserData } from '../../store/selectors';
 import type { AppDispatch } from '../../store/index';
 
 const MAX_RATING = 5;
@@ -23,7 +23,9 @@ function OfferPage(): JSX.Element {
   const reviews = useSelector(getReviews);
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const favoriteCount = useSelector(getFavoriteCount);
+  const userData = useSelector(getUserData);
   const isAuthorized = useMemo(() => authorizationStatus === AuthorizationStatus.Auth, [authorizationStatus]);
+  const userEmail = userData?.email ?? '';
 
   useEffect(() => {
     if (id) {
@@ -109,7 +111,7 @@ function OfferPage(): JSX.Element {
                       <Link className="header__nav-link header__nav-link--profile" to={AppRoute.Favorites}>
                         <div className="header__avatar-wrapper user__avatar-wrapper">
                         </div>
-                        <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
+                        <span className="header__user-name user__name">{userEmail}</span>
                         <span className="header__favorite-count">{favoriteCount}</span>
                       </Link>
                     </li>

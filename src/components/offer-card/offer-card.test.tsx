@@ -20,7 +20,7 @@ describe('Component: OfferCard', () => {
       </MemoryRouter>,
       {
         preloadedState: {
-          userProcess: { authorizationStatus: AuthorizationStatus.NoAuth },
+          userProcess: { authorizationStatus: AuthorizationStatus.NoAuth, userData: null },
         },
       }
     );

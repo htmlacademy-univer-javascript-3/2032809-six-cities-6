@@ -4,6 +4,7 @@ import {
   loadFavoriteOffers,
   loadOffers,
   setOffersLoadingStatus,
+  setOffersError,
   setSortType,
   updateOfferFavoriteStatus,
 } from '../action';
@@ -20,6 +21,7 @@ describe('Reducer: offersProcess', () => {
       isOffersLoading: false,
       favoriteOffers: [],
       favoriteCount: 0,
+      offersError: false,
     });
   });
 
@@ -47,6 +49,12 @@ describe('Reducer: offersProcess', () => {
     const state = offersProcessReducer(undefined, setOffersLoadingStatus(true));
 
     expect(state.isOffersLoading).toBe(true);
+  });
+
+  it('должен установить флаг ошибки при setOffersError', () => {
+    const state = offersProcessReducer(undefined, setOffersError(true));
+
+    expect(state.offersError).toBe(true);
   });
 
   it('должен загрузить избранные предложения и посчитать количество', () => {

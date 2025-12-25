@@ -11,6 +11,7 @@ type OffersProcessState = {
   isOffersLoading: boolean;
   favoriteOffers: Offer[];
   favoriteCount: number;
+  offersError: boolean;
 };
 
 const initialState: OffersProcessState = {
@@ -20,6 +21,7 @@ const initialState: OffersProcessState = {
   isOffersLoading: false,
   favoriteOffers: [],
   favoriteCount: 0,
+  offersError: false,
 };
 
 const offersProcessSlice = createSlice({
@@ -39,6 +41,9 @@ const offersProcessSlice = createSlice({
       })
       .addCase('SET_OFFERS_LOADING_STATUS', (state, action) => {
         state.isOffersLoading = (action as { type: 'SET_OFFERS_LOADING_STATUS'; payload: boolean }).payload;
+      })
+      .addCase('SET_OFFERS_ERROR', (state, action) => {
+        state.offersError = (action as { type: 'SET_OFFERS_ERROR'; payload: boolean }).payload;
       })
       .addCase('LOAD_FAVORITE_OFFERS', (state, action) => {
         const favoriteOffers = (action as { type: 'LOAD_FAVORITE_OFFERS'; payload: Offer[] }).payload;

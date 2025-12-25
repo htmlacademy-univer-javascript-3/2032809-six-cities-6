@@ -32,7 +32,7 @@ function LoginPage(): JSX.Element {
       return;
     }
 
-    const passwordValid = /^(?=.*[A-Za-z])(?=.*\\d).+$/;
+    const passwordValid = /^(?=.*[A-Za-z])(?=.*\d).+$/;
     if (!passwordValid.test(password)) {
       setError('Password must contain at least one letter and one number');
       return;
